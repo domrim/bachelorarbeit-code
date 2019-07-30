@@ -80,15 +80,15 @@ def get_rrc_ir(K, n_up, t_symbol, r):
     
     for k in k_steps.astype(int):
 
-        if t_steps[ k ] == 0:
-            rrc[ k ] = 1.0 - r + ( 4.0 * r / np.pi )
-            
-        elif r != 0 and np.abs( t_steps[k] ) == t_symbol / ( 4.0 * r ):
-            rrc[ k ] = 0 #TODO
-        
+        if t_steps[k] == 0:
+            rrc[ k ] = ( np.pi + 4.0 * r - np.pi * r ) / ( np.pi * t_symbol)
+
+        elif r != 0 and np.abs(t_steps[k] ) == t_symbol / ( 4.0 * r ):
+            rrc[ k ] = r * ( -2.0 * np.cos( np.pi * ( 1.0 + r ) / ( 4.0 * r ) )                             + np.pi * np.sin( np.pi * ( 1.0 + r ) / ( 4.0 * r ) ) )                         / ( np.pi * t_symbol )
+
         else:
-            rrc[ k ] = 0 #TODO
-    
+            rrc[ k ] = ( 4.0 * r * t_steps[k] / t_symbol * np.cos( np.pi * ( 1.0 + r ) * t_steps[k] / t_symbol)                         + np.sin( np.pi * (1.0 - r ) * t_steps[k] / t_symbol )) /                         (( 1.0 - ( 4.0 * r * t_steps[k] / t_symbol)**2 ) * np.pi * t_steps[k])
+
     return rrc
 
 
@@ -120,7 +120,7 @@ syms_per_filt = 4  # symbols per filter (plus minus in both directions)
 K_filt = 2 * syms_per_filt * n_up + 1         # length of the fir filter
 
 rc = get_rc_ir( K_filt, n_up, t_symbol, r_rc )
-#rc /= np.linalg.norm( rc ) 
+rrc = get_rrc_ir( K_filt, n_up, t_symbol, r_rrc )
 
 gaussian = get_gaussian_ir( K_filt, n_up, t_symbol, r_gaussian )
 #gaussian /= np.linalg.norm( gaussian )
@@ -139,9 +139,10 @@ plt.rc('text', usetex=True)
 matplotlib.rc('figure', figsize=(18, 10) )
 
 plt.plot( np.arange( np.size( rc ) ) * t_symbol / n_up, rc, linewidth=2.0, label='RC' )
+plt.plot( np.arange( np.size( rrc ) ) * t_symbol / n_up, rrc, linewidth=2.0, label='RRC' )
 plt.plot( np.arange( np.size( gaussian ) ) * t_symbol / n_up, gaussian, linewidth=2.0, label='Gaussian' )
 
-plt.ylim( (-.3, 1.1 ) ) 
+plt.ylim( (-.3, 1.3 ) ) 
 plt.grid( True )
 plt.legend( loc='upper right' )
 plt.title( 'Impulse Responses' )
