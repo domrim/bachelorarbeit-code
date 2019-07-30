@@ -54,13 +54,13 @@ def get_rc_ir(K, n_up, t_symbol, r):
     for k in k_steps.astype(int):
         
         if t_steps[k] == 0:
-            rc[ k ] = 1.
+            rc[ k ] = 1. / t_symbol
             
         elif r != 0 and np.abs( t_steps[k] ) == t_symbol / ( 2.0 * r ):
-            rc[ k ] = r * np.sin( np.pi / r )
+            rc[ k ] = r / ( 2.0 * t_symbol ) * np.sin( np.pi / ( 2.0 * r ) )
             
         else:
-            rc[ k ] = np.sin( np.pi * t_steps[k]/t_symbol ) / np.pi / t_steps[k]                 * np.cos( r * np.pi * t_steps[k] / t_symbol )                 / ( 1.0 - ( 2.0 * r * t_steps[k] / t_symbol )**2 )
+            rc[ k ] = np.sin( np.pi * t_steps[k] / t_symbol ) / np.pi / t_steps[k]                 * np.cos( r * np.pi * t_steps[k] / t_symbol )                 / ( 1.0 - ( 2.0 * r * t_steps[k] / t_symbol )**2 )
  
     return rc
 
