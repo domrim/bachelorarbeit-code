@@ -5,18 +5,6 @@
 import numpy as np
 
 
-# Parameters
-
-# modulation scheme and constellation points
-M = 2
-constellation_points = [ -1, 1 ]
-
-t_symbol = 1.0  # symbol time
-n_symbol = 100  # number of symbols
-
-n_up = 8 # samples per symbol (>1 => oversampling)
-
-
 # Filter Definitions
 
 # Raised-Cosine
@@ -38,10 +26,6 @@ def get_rc_ir(K, n_up, t_symbol, r):
 
     # check that IR length is odd
     assert K % 2 == 1, 'Length of the impulse response should be an odd number'
-    
-    # map zero r to close-to-zero
-    #if r == 0:
-    #    r = 1e-32
     
     # initialize output length and sample time
     rc = np.zeros( K )
@@ -109,6 +93,18 @@ def get_gaussian_ir(K, n_up, t_symbol, r):
     return gaussian
 
 
+# Parameters
+
+# modulation scheme and constellation points
+M = 2
+constellation_points = [ -1, 1 ]
+
+t_symbol = 1.0  # symbol time
+n_symbol = 1000  # number of symbols
+
+n_up = 100 # samples per symbol (>1 => oversampling)
+
+
 # Tests
 
 # parameters of the filters
@@ -121,10 +117,7 @@ K_filt = 2 * syms_per_filt * n_up + 1         # length of the fir filter
 
 rc = get_rc_ir( K_filt, n_up, t_symbol, r_rc )
 rrc = get_rrc_ir( K_filt, n_up, t_symbol, r_rrc )
-
 gaussian = get_gaussian_ir( K_filt, n_up, t_symbol, r_gaussian )
-#gaussian /= np.linalg.norm( gaussian )
-
 
 import matplotlib.pyplot as plt
 import matplotlib
@@ -146,7 +139,4 @@ plt.ylim( (-.3, 1.3 ) )
 plt.grid( True )
 plt.legend( loc='upper right' )
 plt.title( 'Impulse Responses' )
-
-
-
 
