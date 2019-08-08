@@ -8,7 +8,7 @@ import numpy as np
 # Filter Definitions
 
 # taken from https://github.com/kit-cel/lecture-examples/blob/master/nt1/vorlesung/3_mod_demod/pulse_shaping.ipynb
-def get_rc_ir(K, r, f_symbol, n_up):
+def get_rc_ir(syms, r, f_symbol, n_up):
     ''' 
     Determines coefficients of an RC filter 
     
@@ -17,22 +17,19 @@ def get_rc_ir(K, r, f_symbol, n_up):
     
     NOTE: Length of the IR has to be an odd number
     
-    IN: length of IR (K), roll-off factor (r), symbol rate (f_symbol), upsampling factor (n_up) 
+    IN: "normed" length of ir (syms), roll-off factor (r), symbol rate (f_symbol), upsampling factor (n_up) 
     OUT: time values (t_index), filter coefficients (ir)
     '''
-
-    # check that IR length is odd
-    assert K % 2 == 1, 'Length of the impulse response should be an odd number'
     
     # initialize output length and sample time
-    ir = np.zeros( K )
+    ir = np.zeros( 2 * syms * n_up + 1 )
     T_symbol = 1.0 / f_symbol
     t_sample = T_symbol / n_up
     
     # time indices and sampled time
-    k_steps = np.arange( -(K-1) / 2.0, (K-1) / 2.0 + 1 )   
+    k_steps = np.arange( - syms * n_up, syms * n_up + 1 )   
     t_steps = k_steps * t_sample
-    t_index = np.arange( K ) / f_symbol / n_up
+    t_index = np.arange( 2 * syms * n_up + 1 ) / f_symbol / n_up
     
     for k in k_steps.astype(int):
         
@@ -48,7 +45,7 @@ def get_rc_ir(K, r, f_symbol, n_up):
     return t_index, ir
 
 
-def get_rrc_ir(K, r, f_symbol, n_up):
+def get_rrc_ir(syms, r, f_symbol, n_up):
     ''' 
     Determines coefficients of an RRC filter 
     
@@ -57,22 +54,19 @@ def get_rrc_ir(K, r, f_symbol, n_up):
     
     NOTE: Length of the IR has to be an odd number
     
-    IN: length of IR (K), roll-off factor (r), symbol rate (f_symbol), upsampling factor (n_up) 
+    IN: "normed" length of ir (syms), roll-off factor (r), symbol rate (f_symbol), upsampling factor (n_up) 
     OUT: time values (t_index), filter coefficients (ir)
     '''
     
-    # check that IR length is odd
-    assert K % 2 == 1, 'Length of the impulse response should be an odd number'
-    
     # initialize output length and sample time
-    ir = np.zeros( K )
+    ir = np.zeros( 2 * syms * n_up + 1 )
     T_symbol = 1.0 / f_symbol
     t_sample = T_symbol / n_up
     
     # time indices and sampled time
-    k_steps = np.arange( -(K-1) / 2.0, (K-1) / 2.0 + 1 )   
+    k_steps = np.arange( - syms * n_up, syms * n_up + 1 )   
     t_steps = k_steps * t_sample
-    t_index = np.arange( K ) / f_symbol / n_up
+    t_index = np.arange( 2 * syms * n_up + 1 ) / f_symbol / n_up
     
     for k in k_steps.astype(int):
 
@@ -88,27 +82,24 @@ def get_rrc_ir(K, r, f_symbol, n_up):
     return t_index, ir
 
 
-def get_gaussian_ir(K, r, f_symbol, n_up):
+def get_gaussian_ir(syms, r, f_symbol, n_up):
     """
     Determines coefficients of an Gaussian filter
         
     NOTE: Length of the IR has to be an odd number
     
-    IN: length of IR (K), roll-off factor (r), symbol rate (f_symbol), upsampling factor (n_up) 
+    IN: "normed" length of ir (syms), roll-off factor (r), symbol rate (f_symbol), upsampling factor (n_up) 
     OUT: time values (t_index), filter coefficients (ir)
     """
-    
-    # check that IR length is odd
-    assert K % 2 == 1, 'Length of the impulse response should be an odd number'
     
     # initialize sample time
     T_symbol = 1.0 / f_symbol
     t_sample = T_symbol / n_up
     
     # time indices and sampled time
-    k_steps = np.arange( -(K-1) / 2.0, (K-1) / 2.0 + 1 )   
+    k_steps = np.arange( - syms * n_up, syms * n_up + 1 )   
     t_steps = k_steps * t_sample
-    t_index = np.arange( K ) / f_symbol / n_up
+    t_index = np.arange( 2 * syms * n_up + 1 ) / f_symbol / n_up
     
     ir = ( r / np.sqrt( np.pi )) * np.exp( -np.square( r * t_steps ))
     
@@ -135,11 +126,10 @@ r_rrc = .33
 r_gaussian = 0.8
 
 syms_per_filt = 10  # symbols per filter (plus minus in both directions)
-K_filt = 2 * syms_per_filt * n_up + 1         # length of the fir filter
 
-t_rc, rc = get_rc_ir( K_filt, r_rc, f_symbol, n_up )
-t_rrc, rrc = get_rrc_ir( K_filt, r_rrc, f_symbol, n_up )
-t_gaussian, gaussian = get_gaussian_ir( K_filt, r_gaussian, f_symbol, n_up )
+t_rc, rc = get_rc_ir( syms_per_filt, r_rc, f_symbol, n_up )
+t_rrc, rrc = get_rrc_ir( syms_per_filt, r_rrc, f_symbol, n_up )
+t_gaussian, gaussian = get_gaussian_ir( syms_per_filt, r_gaussian, f_symbol, n_up )
 
 import matplotlib.pyplot as plt
 import matplotlib
