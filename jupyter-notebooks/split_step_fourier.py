@@ -45,7 +45,9 @@ def get_rc_ir(syms, r, f_symbol, n_up):
             
         else:
             ir[ k ] = np.sin( np.pi * t_steps[k] / T_symbol ) / np.pi / t_steps[k]                 * np.cos( r * np.pi * t_steps[k] / T_symbol )                 / ( 1.0 - ( 2.0 * r * t_steps[k] / T_symbol )**2 )
-     
+    
+    ir /= np.linalg.norm(ir)
+    
     return t_index, ir
 
 
@@ -88,6 +90,8 @@ def get_rrc_ir(syms, r, f_symbol, n_up):
         else:
             ir[ k ] = ( 4.0 * r * t_steps[k] / T_symbol                         * np.cos( np.pi * ( 1.0 + r ) * t_steps[k] / T_symbol)                         + np.sin( np.pi * (1.0 - r ) * t_steps[k] / T_symbol ))             / (( 1.0 - ( 4.0 * r * t_steps[k] / T_symbol)**2 ) * np.pi * t_steps[k])
 
+    ir /= np.linalg.norm(ir)
+
     return t_index, ir
 
 
@@ -115,8 +119,9 @@ def get_gaussian_ir(syms, r, f_symbol, n_up):
     t_steps = k_steps * t_sample
     t_index = np.arange( 2 * syms * n_up + 1 ) / f_symbol / n_up
     
-    ir = ( r / np.sqrt( np.pi )) * np.exp( -np.square( r * t_steps ))
-    
+    ir = ( r / np.sqrt( np.pi )) * np.exp( -np.square( r * t_steps ))    
+    ir /= np.linalg.norm(ir)
+
     return t_index, ir
 
 
