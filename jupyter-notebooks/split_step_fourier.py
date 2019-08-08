@@ -9,17 +9,21 @@ import numpy as np
 
 # taken from https://github.com/kit-cel/lecture-examples/blob/master/nt1/vorlesung/3_mod_demod/pulse_shaping.ipynb
 def get_rc_ir(syms, r, f_symbol, n_up):
-    ''' 
-    Determines coefficients of an RC filter 
-    
+    """Determines coefficients of an RC filter
+
     Formula out of: K.-D. Kammeyer, Nachrichtenübertragung
-    At poles, l'Hospital was used 
-    
-    NOTE: Length of the IR has to be an odd number
-    
-    IN: "normed" length of ir (syms), roll-off factor (r), symbol rate (f_symbol), upsampling factor (n_up) 
+    At poles, l'Hospital was used
+
     OUT: time values (t_index), filter coefficients (ir)
-    '''
+
+    :param syms: "normed" length of ir. ir-length will be 2*syms+1
+    :param r: roll-off factor
+    :param f_symbol: symbol rate
+    :param n_up: upsampling factor
+    
+    :returns: tuple containing time-index-array and impulse response in an array
+
+    """
     
     # initialize output length and sample time
     ir = np.zeros( 2 * syms * n_up + 1 )
@@ -46,17 +50,22 @@ def get_rc_ir(syms, r, f_symbol, n_up):
 
 
 def get_rrc_ir(syms, r, f_symbol, n_up):
-    ''' 
-    Determines coefficients of an RRC filter 
-    
+    """Determines coefficients of an RRC filter
+
     Formula out of: K.-D. Kammeyer, Nachrichtenübertragung
-    At poles, l'Hospital was used 
-    
-    NOTE: Length of the IR has to be an odd number
-    
-    IN: "normed" length of ir (syms), roll-off factor (r), symbol rate (f_symbol), upsampling factor (n_up) 
+    At poles, l'Hospital was used
+
+    IN: "normed" length of ir (syms), roll-off factor (r), symbol rate (f_symbol), upsampling factor (n_up)
     OUT: time values (t_index), filter coefficients (ir)
-    '''
+
+    :param syms: "normed" length of ir. ir-length will be 2*syms+1
+    :param r: roll-off factor
+    :param f_symbol: symbol rate
+    :param n_up: upsampling factor
+    
+    :returns: tuple containing time-index-array and impulse response in an array
+
+    """
     
     # initialize output length and sample time
     ir = np.zeros( 2 * syms * n_up + 1 )
@@ -83,13 +92,18 @@ def get_rrc_ir(syms, r, f_symbol, n_up):
 
 
 def get_gaussian_ir(syms, r, f_symbol, n_up):
-    """
-    Determines coefficients of an Gaussian filter
-        
-    NOTE: Length of the IR has to be an odd number
-    
-    IN: "normed" length of ir (syms), roll-off factor (r), symbol rate (f_symbol), upsampling factor (n_up) 
+    """Determines coefficients of an Gaussian filter
+
+    IN: "normed" length of ir (syms), roll-off factor (r), symbol rate (f_symbol), upsampling factor (n_up)
     OUT: time values (t_index), filter coefficients (ir)
+
+    :param syms: "normed" length of ir. ir-length will be 2*syms+1
+    :param r: roll-off factor
+    :param f_symbol: symbol rate
+    :param n_up: upsampling factor
+    
+    :returns: tuple containing time-index-array and impulse response in an array
+
     """
     
     # initialize sample time
