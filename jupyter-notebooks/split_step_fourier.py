@@ -123,46 +123,8 @@ def get_gaussian_ir(syms, r, f_symbol, n_up):
 M = 2
 constellation_points = [ -1, 1 ]
 
-f_symbol = 1.0  # sample rate (Baud)
+f_symbol = 2.0  # sample rate (Baud)
 n_symbol = 1000  # number of symbols
 
 n_up = 100 # samples per symbol (>1 => oversampling)
-
-
-# Tests
-
-# parameters of the filters
-r_rc = .33
-r_rrc = .33
-r_gaussian = 0.8
-
-syms_per_filt = 10  # symbols per filter (plus minus in both directions)
-
-t_rc, rc = get_rc_ir( syms_per_filt, r_rc, f_symbol, n_up )
-t_rrc, rrc = get_rrc_ir( syms_per_filt, r_rrc, f_symbol, n_up )
-t_gaussian, gaussian = get_gaussian_ir( syms_per_filt, r_gaussian, f_symbol, n_up )
-
-import matplotlib.pyplot as plt
-import matplotlib
-
-# showing figures inline
-get_ipython().run_line_magic('matplotlib', 'inline')
-# plotting options 
-font = {'size'   : 20}
-plt.rc('font', **font)
-plt.rc('text', usetex=True)
-
-matplotlib.rc('figure', figsize=(18, 10) )
-
-plt.plot( t_rc, rc, linewidth=2.0, label='RC' )
-plt.plot( t_rrc, rrc, linewidth=2.0, label='RRC' )
-plt.plot( t_gaussian, gaussian, linewidth=2.0, label='Gaussian' )
-
-plt.ylim( (-.3, 1.3 ) ) 
-plt.grid( True )
-plt.legend( loc='upper right' )
-plt.title( 'Impulse Responses' )
-
-
-
 
