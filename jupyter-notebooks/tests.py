@@ -65,27 +65,23 @@ plt.title( 'Impulse Responses' )
 
 # modulation scheme and constellation points
 M = 2
-constellation_points = [ -1, 1 ]
+modulation = {'0': -1, '1': 1}
 
 n_symbol = 10  # number of symbols
 
 # Signalfolge generieren
-send_bits = np.random.randint(M, size=n_symbol)
-send_symbols = [ constellation_points[bit] for bit in send_bits ]
+send_bits = np.random.choice([symbol for symbol in modulation.keys()], size=n_symbol)
 
-send_symbols_up = np.zeros( n_symbol * n_up )
-send_symbols_up[ : : n_up ] = send_symbols
-
-send_rc = np.convolve(rc, send_symbols_up)
-send_rrc = np.convolve(rrc, send_symbols_up)
-send_gaussian = np.convolve(gaussian, send_symbols_up)
+send_rc = split_step_fourier.generate_signal(modulation, send_bits, rc, syms_per_filt)
+send_rrc = split_step_fourier.generate_signal(modulation, send_bits, rrc, syms_per_filt)
+send_gaussian = split_step_fourier.generate_signal(modulation, send_bits, gaussian, 0)
 
 matplotlib.rc('figure', figsize=(24, 12) )
 
 plt.plot( send_rc, linewidth=2.0, label='Send RC' )
 plt.plot( send_rrc, linewidth=2.0, label='Send RRC' )
 plt.plot( send_gaussian, linewidth=2.0, label='Send Gaussian' )
-plt.stem( np.arange(n_symbol*n_up, step=n_up), send_symbols, label='Send symbols', use_line_collection=True, basefmt=' ')
+plt.stem( np.arange(n_symbol*n_up, step=n_up), [ modulation[str(symbol)] for symbol in send_bits ], label='Send symbols', use_line_collection=True, basefmt=' ')
 
 plt.grid( True )
 plt.ylim(-1.1, 1.1)
