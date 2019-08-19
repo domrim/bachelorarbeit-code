@@ -117,7 +117,41 @@ def get_gaussian_ir(syms, r, f_symbol, n_up):
     return t_index, ir
 
 
-# Parameters
+# Pulse forming
+
+def generate_signal(modulation, data, pulse, syms):
+    """Generates send Signal
+    
+    This function calculates send signal with variable 
+    
+    NOTE: If pulse doesn't meet the nyquist isi criterion hand syms = 0 to the function.
+
+    :param modulation: Dict mapping symbols to send-values. Ie {00: 1+1j, 01: 1-1j, 11: -1-1j, 10: -1+1j} 
+    :param data: Data to send. Should be an array containing the symbols.
+    :param pulse: Impulse response of pulse filter
+    :param syms: "Normed" symbol length of pulse
+    
+    :returns: array conatining send signal
+
+    """
+
+    assert isinstance(pulse, np.ndarray), "Pulse should be an numpy array"
+    assert isinstance(data, (list, np.ndarray)), "Send data should be a list or numpy array"
+    assert syms >= 0 and isinstance(syms, int), "syms should be positive int or zero"
+
+    send_symbols = [ modulation[str(symbol)] for symbol in data ]
+
+    if syms == 0:
+        send_symbols_up = np.zeros( len(data) * pulse.size )
+        send_symbols_up[ : : pulse.size ] = send_symbols
+    else:
+        n_up = int((pulse.size - 1) / (2 * syms))
+        send_symbols_up = np.zeros( len(data) * n_up )
+        send_symbols_up[ : : n_up ] = send_symbols
+    
+    send_signal = np.convolve(pulse, send_symbols_up)
+
+    return send_signal
 
 # modulation scheme and constellation points
 M = 2
