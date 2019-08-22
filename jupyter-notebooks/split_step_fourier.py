@@ -31,7 +31,6 @@ def get_rc_ir(syms, r, f_symbol, n_up):
     # time indices and sampled time
     k_steps = np.arange( - syms * n_up, syms * n_up + 1 )   
     t_steps = k_steps * t_sample
-    t_index = np.arange( 2 * syms * n_up + 1 ) / f_symbol / n_up
     
     for k in k_steps.astype(int):
         
@@ -46,7 +45,7 @@ def get_rc_ir(syms, r, f_symbol, n_up):
     
     ir /= np.linalg.norm(ir)
     
-    return t_index, ir
+    return t_sample, ir
 
 
 def get_rrc_ir(syms, r, f_symbol, n_up):
@@ -72,7 +71,6 @@ def get_rrc_ir(syms, r, f_symbol, n_up):
     # time indices and sampled time
     k_steps = np.arange( - syms * n_up, syms * n_up + 1 )   
     t_steps = k_steps * t_sample
-    t_index = np.arange( 2 * syms * n_up + 1 ) / f_symbol / n_up
     
     for k in k_steps.astype(int):
 
@@ -87,7 +85,7 @@ def get_rrc_ir(syms, r, f_symbol, n_up):
 
     ir /= np.linalg.norm(ir)
 
-    return t_index, ir
+    return t_sample, ir
 
 
 def get_gaussian_ir(syms, r, f_symbol, n_up):
@@ -109,12 +107,11 @@ def get_gaussian_ir(syms, r, f_symbol, n_up):
     # time indices and sampled time
     k_steps = np.arange( - syms * n_up, syms * n_up + 1 )   
     t_steps = k_steps * t_sample
-    t_index = np.arange( 2 * syms * n_up + 1 ) / f_symbol / n_up
     
     ir = ( r / np.sqrt( np.pi )) * np.exp( -np.square( r * t_steps ))    
     ir /= np.linalg.norm(ir)
 
-    return t_index, ir
+    return t_sample, ir
 
 
 # Pulse forming
@@ -153,12 +150,59 @@ def generate_signal(modulation, data, pulse, syms):
 
     return send_signal
 
-# modulation scheme and constellation points
-M = 2
-constellation_points = [ -1, 1 ]
 
-f_symbol = 2.0  # sample rate (Baud)
-n_symbol = 1000  # number of symbols
+# SplitStep Fourier Function
 
-n_up = 100 # samples per symbol (>1 => oversampling)
+def splitstepfourier(u0, dt, dz, nz, alpha, beta2, gamma):
+    """Split-step fourier method
+    
+    This function solves the nonlinear Schrodinger equation for pulse propagation in an optical fiber using the split-step Fourier method.
+    Python-Implementation of the Matlab-Code from "SSPROP" found here: https://www.photonics.umd.edu/software/ssprop/
+    
+    NOTE: Dimensions / Units of the params can be anything. They just have to be consistent.
+
+    :param u0: input signal (array)
+    :param dt: time step between samples (sample time)
+    :param dz: propagation stepsize (delta z)
+    :param nz: number of steps. ie totalsteps = nz * dz
+    :param alpha: power loss coeficient
+    :param beta2: dispersion polynomial coefficient
+    :param gamma: nonlinearity coefficient
+    
+    :returns: signal at the output
+
+    """
+    assert isinstance(u0, np.ndarray), "Input signal should be a numpy array."
+
+    nt = len(u0)
+    dw = 2 * np.pi * np.append(np.arange(nt/2), np.arange(-nt/2, 0)) / (dt * nt)
+
+    # Linear operator (frequency domain)
+    linear_operator = np.exp((-alpha/2 - 1j * beta2 / 2 * dw) * dz)
+    linear_operator_halfstep = np.exp((-alpha/2 - 1j * beta2 / 2 * dw) * dz / 2)
+
+    # Nonlinear operator (time domain)
+    nonlinear_operator = lambda u : np.exp(-1j * gamma * np.square(np.absolute(u)) * dz)
+
+    # Start (half linear step)
+    start = u0
+    f_temp = np.fft.fft(start)
+    f_temp = f_temp * linear_operator_halfstep
+    
+    # Main Loop (nz-1 nonlinear + full linear steps)
+    for step in range(nz-1):
+        temp = np.fft.ifft(f_temp)
+        temp = temp * nonlinear_operator(start)
+        f_temp = np.fft.fft(temp)
+        f_temp = f_temp * linear_operator
+    
+    # End (nonlinear + half linear step)
+    temp = np.fft.ifft(f_temp)
+    temp = temp * nonlinear_operator(temp)
+    f_temp = np.fft.fft(temp)
+    f_end = f_temp * linear_operator_halfstep
+    
+    output = np.fft.ifft(f_end)
+    
+    return output
 
