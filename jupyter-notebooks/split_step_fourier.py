@@ -190,7 +190,7 @@ def splitstepfourier(u0, dt, dz, nz, alpha, beta2, gamma):
     f_temp = f_temp * linear_operator_halfstep
     
     # Main Loop (nz-1 nonlinear + full linear steps)
-    for step in range(nz-1):
+    for step in range(1,nz-1):
         temp = np.fft.ifft(f_temp)
         temp = temp * nonlinear_operator(start)
         f_temp = np.fft.fft(temp)
