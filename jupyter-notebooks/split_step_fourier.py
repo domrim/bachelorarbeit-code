@@ -178,8 +178,8 @@ def splitstepfourier(u0, dt, dz, nz, alpha, beta2, gamma):
     dw = 2 * np.pi * np.append(np.arange(nt/2), np.arange(-nt/2, 0)) / (dt * nt)
 
     # Linear operator (frequency domain)
-    linear_operator = np.exp((-alpha/2 - 1j * beta2 / 2 * dw) * dz)
-    linear_operator_halfstep = np.exp((-alpha/2 - 1j * beta2 / 2 * dw) * dz / 2)
+    linear_operator = np.exp((-alpha/2 - 1j * beta2 / 2 * np.square(dw)) * dz)
+    linear_operator_halfstep = np.exp((-alpha/2 - 1j * beta2 / 2 * np.square(dw)) * dz / 2)
 
     # Nonlinear operator (time domain)
     nonlinear_operator = lambda u : np.exp(-1j * gamma * np.square(np.absolute(u)) * dz)
