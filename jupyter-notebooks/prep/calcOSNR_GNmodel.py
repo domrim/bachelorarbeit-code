@@ -1,13 +1,7 @@
 #!/usr/bin/env python3
 
-# In[1]:
-
-
 # Imports
 import numpy as np
-
-
-# In[2]:
 
 
 # System parameters
@@ -22,9 +16,6 @@ N_spans=10  # number of spans
 N_pol=2  # number of polarizations
 
 
-# In[3]:
-
-
 # Constants
 h = 6.6256e-34  # Planck's constant [J/s]
 nu = 299792458 / 1550e-9  # light frequency [Hz]
@@ -32,17 +23,11 @@ SNR2OSNR = 10 * np.log10( B_signal / 12.5e9 * N_pol / 2 )  # Eq. (34) of Essiamb
 dB2Neper = 10 / np.log(10)
 
 
-# In[4]:
-
-
 # Set launch power per channel
 vec_start = -10
 vec_stop = 10
 vec_step = .25
 powerVec = np.linspace(-10, 10, num=int(( vec_stop-vec_start) / vec_step + 1 ))  # launch power [dBm]
-
-
-# In[5]:
 
 
 # Some more quantities
@@ -55,15 +40,9 @@ G_tx_ch = np.divide( np.power( 10, ( powerVec - 30 ) / 10 ) , B_signal) # [W/Hz]
 ASE = N_pol * N_spans * np.power(10, NFdB / 10 ) / 2 * ( np.power(10, GaindB / 10 ) - 1 ) * h * nu  # Eq. (50)
 
 
-# In[25]:
-
-
 # GN model
 epsilon = 3 / 10 * np.log( 1 + 6 / Length * L_effa / ( np.arcsinh( 0.5 * np.square(np.pi) * np.abs( beta2 ) * L_effa * np.square( B_total ))))  # Eq. (40)
 G_NLI = np.multiply( np.square(gamma) , np.power( G_tx_ch, 3 ) * np.square(L_eff) * np.power( 2/3, 3 ) * np.arcsinh( 0.5 * np.square( np.pi ) * np.abs( beta2 ) * L_effa * np.square(B_total))/( np.pi * np.abs( beta2 ) * L_effa))  # Eq. (36)
-
-
-# In[26]:
 
 
 # SNR calculation
@@ -73,9 +52,6 @@ GN['SNR_NLI'] = 10 * np.log10( np.divide( G_tx_ch , ( ASE + np.power( N_spans, (
 GN['SNR_ASE'] = 10 * np.log10( np.divide( G_tx_ch, ASE ))
 
 
-# In[23]:
-
-
 # OSNR calculation
 GN['OSNR_NLI'] = np.add(GN['SNR_NLI'], SNR2OSNR)
 GN['OSNR_EDFA'] = np.add(GN['SNR_ASE'], SNR2OSNR)
@@ -83,14 +59,8 @@ GN['OSNR_EDFA'] = np.add(GN['SNR_ASE'], SNR2OSNR)
 GN['power'] = powerVec
 
 
-# In[24]:
-
-
 for key, item in GN.items():
     print("{}:\n{}".format(key, item))
-
-
-# In[ ]:
 
 
 
