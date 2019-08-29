@@ -104,8 +104,8 @@ plt.title( 'Modulation Gaus' )
 
 # Transmission
 
-z_length = 10
-nz = 10000
+z_length = 5
+nz = 2000
 dz = z_length / nz
 
 alpha=0.2  # Dämpfung (dB/km)
@@ -117,17 +117,17 @@ output = split_step_fourier.splitstepfourier(send_rc, t_sample_gaussian, dz, nz,
 
 matplotlib.rc('figure', figsize=(24, 12) )
 
-plt.subplot(211)
-plt.plot( send_rc, linewidth=2.0, label='Send' )
-plt.plot( np.square(abs(output)), linewidth=2.0, label='Output')
+#plt.subplot(211)
+plt.plot( np.square(abs(send_rc)), linewidth=2.0, label='Send' )
+plt.plot( np.square(abs(output)), linewidth=2.0, label='Output' )
 
 plt.grid( True )
 plt.legend( loc='upper right' )
 plt.title( 'Impulse Responses' )
 
-plt.subplot(212)
-plt.plot( np.square(abs(t_sample_gaussian*np.fft.fft(send_rc)/np.sqrt(2*np.pi))), linewidth=2.0, label='Send' )
-plt.plot( np.square(abs(t_sample_gaussian*np.fft.fft(output)/np.sqrt(2*np.pi))), linewidth=2.0, label='Output')
+#plt.subplot(212)
+#plt.plot( np.square(abs(t_sample_gaussian*np.fft.fft(send_gaussian)/np.sqrt(2*np.pi))), linewidth=2.0, label='Send' )
+#plt.plot( np.square(abs(t_sample_gaussian*np.fft.fft(output)/np.sqrt(2*np.pi))), linewidth=2.0, label='Output')
 
 
 
