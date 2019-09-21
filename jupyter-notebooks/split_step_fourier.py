@@ -8,31 +8,33 @@ import numpy as np
 # Filter Definitions
 
 # taken from https://github.com/kit-cel/lecture-examples/blob/master/nt1/vorlesung/3_mod_demod/pulse_shaping.ipynb
-def get_rc_ir(syms, r, f_symbol, n_up):
+def get_rc_ir(syms, r, f_symbol, f_sample, n_up):
     """Determines normed coefficients of an RC filter
 
     Formula out of: K.-D. Kammeyer, Nachrichtenübertragung
     At poles, l'Hospital was used
 
     :param syms: "normed" length of ir. ir-length will be 2*syms+1
-    :param r: roll-off factor
-    :param f_symbol: symbol rate
-    :param n_up: upsampling factor
+    :param r: roll-off factor [Float]
+    :param f_symbol: symbol rate (Baud)
+    :param f_sample: sample rate (Hz)
+    :param n_up: upsampling factor [Int]
     
     :returns: tuple containing time-index-array and impulse response in an array
 
     """
     
     # initialize output length and sample time
-    ir = np.zeros( 2 * syms * n_up + 1 )
-    T_symbol = 1.0 / f_symbol
-    t_sample = T_symbol / n_up
-    
+    T_symbol = 1.0 / f_symbol  # Duration of one Symbol
+    t_sample = 1.0 / f_sample / n_up  # length of one sample is inverse of the product of the sample rate and the oversampling factor
+    T_ir = 2 * syms * T_symbol  # Duration of the impulse response is positive and negative normed symbols added multplied by Symbol Duration
+    ir = np.zeros( int(T_ir / t_sample) + 1 )  # samples of impulse response is definied by duration of the ir divided by the sample time plus one for the 0th sample
+
     # time indices and sampled time
-    k_steps = np.arange( - syms * n_up, syms * n_up + 1 )   
+    k_steps = np.arange( - T_ir / t_sample / 2, T_ir / t_sample / 2 + 1, dtype=int )
     t_steps = k_steps * t_sample
     
-    for k in k_steps.astype(int):
+    for k in k_steps:
         
         if t_steps[k] == 0:
             ir[ k ] = 1. / T_symbol
@@ -48,28 +50,30 @@ def get_rc_ir(syms, r, f_symbol, n_up):
     return t_sample, ir
 
 
-def get_rrc_ir(syms, r, f_symbol, n_up):
+def get_rrc_ir(syms, r, f_symbol, f_sample, n_up):
     """Determines normed coefficients of an RRC filter
 
     Formula out of: K.-D. Kammeyer, Nachrichtenübertragung
     At poles, l'Hospital was used
 
     :param syms: "normed" length of ir. ir-length will be 2*syms+1
-    :param r: roll-off factor
-    :param f_symbol: symbol rate
-    :param n_up: upsampling factor
+    :param r: roll-off factor [Float]
+    :param f_symbol: symbol rate (Baud)
+    :param f_sample: sample rate (Hz)
+    :param n_up: upsampling factor [Int]
     
     :returns: tuple containing time-index-array and impulse response in an array
 
     """
     
     # initialize output length and sample time
-    ir = np.zeros( 2 * syms * n_up + 1 )
-    T_symbol = 1.0 / f_symbol
-    t_sample = T_symbol / n_up
-    
+    T_symbol = 1.0 / f_symbol  # Duration of one Symbol
+    t_sample = 1.0 / f_sample / n_up  # length of one sample is inverse of the product of the sample rate and the oversampling factor
+    T_ir = 2 * syms * T_symbol  # Duration of the impulse response is positive and negative normed symbols added multplied by Symbol Duration
+    ir = np.zeros( int(T_ir / t_sample) + 1 )  # samples of impulse response is definied by duration of the ir divided by the sample time plus one for the 0th sample
+
     # time indices and sampled time
-    k_steps = np.arange( - syms * n_up, syms * n_up + 1 )   
+    k_steps = np.arange( - T_ir / t_sample / 2, T_ir / t_sample / 2 + 1, dtype=int )
     t_steps = k_steps * t_sample
     
     for k in k_steps.astype(int):
@@ -88,26 +92,26 @@ def get_rrc_ir(syms, r, f_symbol, n_up):
     return t_sample, ir
 
 
-def get_gaussian_ir(syms, r, f_symbol, n_up):
+def get_gaussian_ir(r, f_symbol, f_sample, n_up):
     """Determines normed coefficients of an Gaussian filter
 
-    :param syms: "normed" length of ir. ir-length will be 2*syms+1
-    :param r: roll-off factor
-    :param f_symbol: symbol rate
-    :param n_up: upsampling factor
+    :param r: roll-off factor [Float]
+    :param f_symbol: symbol rate (Baud)
+    :param f_sample: sample rate (Hz)
+    :param n_up: upsampling factor [Int]
     
     :returns: tuple containing time-index-array and impulse response in an array
 
     """
     
     # initialize sample time
-    T_symbol = 1.0 / f_symbol
-    t_sample = T_symbol / n_up
+    T_symbol = 1.0 / f_symbol  # Symbol time; in this case = pulse length
+    t_sample = 1.0 / f_sample / n_up  # length of one sample is inverse of the product of the sample rate and the oversampling factor
     
     # time indices and sampled time
-    k_steps = np.arange( - syms * n_up, syms * n_up + 1 )   
+    k_steps = np.arange( - T_symbol / t_sample / 2, T_symbol / t_sample / 2 + 1 ) # TODO: Länge anpassen 
     t_steps = k_steps * t_sample
-    
+
     ir = ( r / np.sqrt( np.pi )) * np.exp( -np.square( r * t_steps ))    
     ir /= np.linalg.norm(ir)
 
