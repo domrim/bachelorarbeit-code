@@ -7,10 +7,7 @@ import matplotlib
 import sys
 import os
 
-sys.path.append(os.getcwd())
-sys.path.append(os.getcwd()+"/split_step_fourier.py")
-
-import split_step_fourier
+get_ipython().run_line_magic('run', 'split_step_fourier.ipynb')
 
 # showing figures inline
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -21,7 +18,8 @@ plt.rc('text', usetex=True)
 
 
 # parameters of the filters
-f_symbol = 1.0  # sample rate (Baud)
+f_symbol = 1.0  # symbol rate (Baud) (Symbols per second)
+f_sample = 10  # sample rate (Hz) (Samples per second)
 n_up = 100 # samples per symbol (>1 => oversampling)
 
 r_rc = .33
@@ -30,15 +28,15 @@ r_gaussian = 0.8
 
 syms_per_filt = 4  # symbols per filter (plus minus in both directions)
 
-t_sample_rc, rc = split_step_fourier.get_rc_ir( syms_per_filt, r_rc, f_symbol, n_up )
-t_sample_rrc, rrc = split_step_fourier.get_rrc_ir( syms_per_filt, r_rrc, f_symbol, n_up )
-t_sample_gaussian, gaussian = split_step_fourier.get_gaussian_ir( syms_per_filt, r_gaussian, f_symbol, n_up )
+t_sample_rc, rc = get_rc_ir( syms_per_filt, r_rc, f_symbol, f_sample, n_up )
+t_sample_rrc, rrc = get_rrc_ir( syms_per_filt, r_rrc, f_symbol, f_sample, n_up )
+t_sample_gaussian, gaussian = get_gaussian_ir( r_gaussian, f_symbol/2/syms_per_filt, f_sample, n_up )
 
 matplotlib.rc('figure', figsize=(24, 12) )
 
 plt.plot( np.arange(rc.size)*t_sample_rc, rc, linewidth=2.0, label='RC' )
-plt.plot( np.arange(rc.size)*t_sample_rrc, rrc, linewidth=2.0, label='RRC' )
-plt.plot( np.arange(rc.size)*t_sample_gaussian, gaussian, linewidth=2.0, label='Gaussian' )
+plt.plot( np.arange(rrc.size)*t_sample_rrc, rrc, linewidth=2.0, label='RRC' )
+plt.plot( np.arange(gaussian.size)*t_sample_gaussian, gaussian, linewidth=2.0, label='Gaussian' )
 
 plt.grid( True )
 plt.legend( loc='upper right' )
@@ -48,8 +46,8 @@ plt.title( 'Impulse Responses' )
 
 # Comparison of convolved rrc with rc
 
-t_rc, rc = split_step_fourier.get_rc_ir( syms_per_filt, r_rc, f_symbol, n_up )
-t_rrc, rrc = split_step_fourier.get_rrc_ir( syms_per_filt, r_rrc, f_symbol, n_up )
+t_rc, rc = get_rc_ir( syms_per_filt, r_rc, f_symbol, f_sample, n_up )
+t_rrc, rrc = get_rrc_ir( syms_per_filt, r_rrc, f_symbol, f_sample, n_up )
 
 rrc_convolved = np.convolve(rrc, rrc, mode='same')
 rrc_convolved /= np.linalg.norm(rrc_convolved)
@@ -74,16 +72,16 @@ n_symbol = 4  # number of symbols
 # Signalfolge generieren
 send_bits = np.random.choice([symbol for symbol in modulation.keys()], size=n_symbol)
 
-send_rc = split_step_fourier.generate_signal(modulation, send_bits, rc, syms_per_filt)
-send_rrc = split_step_fourier.generate_signal(modulation, send_bits, rrc, syms_per_filt)
-send_gaussian = split_step_fourier.generate_signal(modulation, send_bits, gaussian, 0)
+send_rc = generate_signal(modulation, send_bits, rc, syms_per_filt)
+send_rrc = generate_signal(modulation, send_bits, rrc, syms_per_filt)
+send_gaussian = generate_signal(modulation, send_bits, gaussian, 0)
 
 matplotlib.rc('figure', figsize=(24, 12) )
 
 plt.subplot(121)
 plt.plot( np.arange(send_rc.size)*t_sample_rc, send_rc, linewidth=2.0, label='Send RC' )
 plt.plot( np.arange(send_rrc.size)*t_sample_rrc, send_rrc, linewidth=2.0, label='Send RRC' )
-plt.stem( np.arange(n_symbol*n_up, step=n_up)*t_sample_rc, [ modulation[str(symbol)] for symbol in send_bits ], label='Send symbols', use_line_collection=True, basefmt=' ')
+plt.stem( np.arange(n_symbol/f_symbol, step=1/f_symbol)+syms_per_filt/f_symbol, [ modulation[str(symbol)] for symbol in send_bits ], label='Send symbols', use_line_collection=True, basefmt=' ')
 
 plt.grid( True )
 plt.ylim(-1.1, 1.1)
@@ -93,7 +91,7 @@ plt.title( 'Modulation RC/RRC' )
 
 plt.subplot(122)
 plt.plot( np.arange(send_gaussian.size)*t_sample_gaussian, send_gaussian, linewidth=2.0, label='Send Gaussian' )
-plt.stem( np.arange(n_symbol*n_up, step=n_up)*t_sample_gaussian, [ modulation[str(symbol)] for symbol in send_bits ], label='Send symbols', use_line_collection=True, basefmt=' ')
+plt.stem( np.arange(8*n_symbol/f_symbol, step=8/f_symbol)+syms_per_filt/f_symbol, [ modulation[str(symbol)] for symbol in send_bits ], label='Send symbols', use_line_collection=True, basefmt=' ')
 
 plt.grid( True )
 plt.ylim(-1.1, 1.1)
