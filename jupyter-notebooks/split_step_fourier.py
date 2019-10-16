@@ -27,10 +27,10 @@ def get_rc_ir(syms, r, f_symbol, n_up):
     T_symbol = 1.0 / f_symbol  # Duration of one Symbol
     t_sample = T_symbol / n_up  # length of one sample is the symbol-duration divided by the oversampling factor (=1/sampling rate)
     T_ir = 2 * syms * T_symbol  # Duration of the impulse response is positive and negative normed symbols added multplied by Symbol Duration
-    ir = np.zeros( int(T_ir / t_sample) + 1 )  # samples of impulse response is definied by duration of the ir divided by the sample time plus one for the 0th sample
+    ir = np.zeros(int(T_ir / t_sample) + 1)  # samples of impulse response is definied by duration of the ir divided by the sample time plus one for the 0th sample
 
     # time indices and sampled time
-    k_steps = np.arange( - T_ir / t_sample / 2, T_ir / t_sample / 2 + 1, dtype=int )
+    k_steps = np.arange(- T_ir / t_sample / 2, T_ir / t_sample / 2 + 1, dtype=int)
     t_steps = k_steps * t_sample
     
     for k in k_steps:
@@ -42,7 +42,7 @@ def get_rc_ir(syms, r, f_symbol, n_up):
             ir[ k ] = r / ( 2.0 * T_symbol ) * np.sin( np.pi / ( 2.0 * r ) )
             
         else:
-            ir[ k ] = np.sin( np.pi * t_steps[k] / T_symbol ) / np.pi / t_steps[k]                 * np.cos( r * np.pi * t_steps[k] / T_symbol )                 / ( 1.0 - ( 2.0 * r * t_steps[k] / T_symbol )**2 )
+            ir[ k ] = np.sin(np.pi * t_steps[k] / T_symbol) / np.pi / t_steps[k] * np.cos(r * np.pi * t_steps[k] / T_symbol)                    / (1.0 - (2.0 * r * t_steps[k] / T_symbol)**2)
     
     ir /= np.linalg.norm(ir)
     
@@ -68,22 +68,22 @@ def get_rrc_ir(syms, r, f_symbol, n_up):
     T_symbol = 1.0 / f_symbol  # Duration of one Symbol
     t_sample = T_symbol / n_up  # length of one sample is the symbol-duration divided by the oversampling factor (=1/sampling rate)
     T_ir = 2 * syms * T_symbol  # Duration of the impulse response is positive and negative normed symbols added multplied by Symbol Duration
-    ir = np.zeros( int(T_ir / t_sample) + 1 )  # samples of impulse response is definied by duration of the ir divided by the sample time plus one for the 0th sample
+    ir = np.zeros(int(T_ir / t_sample) + 1)  # samples of impulse response is definied by duration of the ir divided by the sample time plus one for the 0th sample
 
     # time indices and sampled time
-    k_steps = np.arange( - T_ir / t_sample / 2, T_ir / t_sample / 2 + 1, dtype=int )
+    k_steps = np.arange(- T_ir / t_sample / 2, T_ir / t_sample / 2 + 1, dtype=int)
     t_steps = k_steps * t_sample
     
     for k in k_steps.astype(int):
 
         if t_steps[k] == 0:
-            ir[ k ] = ( np.pi + 4.0 * r - np.pi * r ) / ( np.pi * T_symbol)
+            ir[ k ] = (np.pi + 4.0 * r - np.pi * r) / (np.pi * T_symbol)
 
         elif r != 0 and np.abs(t_steps[k] ) == T_symbol / ( 4.0 * r ):
-            ir[ k ] = r * ( -2.0 * np.cos( np.pi * ( 1.0 + r ) / ( 4.0 * r ) )                             + np.pi * np.sin( np.pi * ( 1.0 + r ) / ( 4.0 * r ) ) )             / ( np.pi * T_symbol )
+            ir[ k ] = r * (-2.0 * np.cos(np.pi * (1.0 + r) / (4.0 * r)) + np.pi * np.sin(np.pi * (1.0 + r) / (4.0 * r))) / (np.pi * T_symbol)
 
         else:
-            ir[ k ] = ( 4.0 * r * t_steps[k] / T_symbol                         * np.cos( np.pi * ( 1.0 + r ) * t_steps[k] / T_symbol)                         + np.sin( np.pi * (1.0 - r ) * t_steps[k] / T_symbol ))             / (( 1.0 - ( 4.0 * r * t_steps[k] / T_symbol)**2 ) * np.pi * t_steps[k])
+            ir[ k ] = ( 4.0 * r * t_steps[k] / T_symbol * np.cos(np.pi * (1.0 + r) * t_steps[k] / T_symbol) + np.sin(np.pi * (1.0 - r) * t_steps[k] / T_symbol))                    / (( 1.0 - (4.0 * r * t_steps[k] / T_symbol)**2) * np.pi * t_steps[k])
 
     ir /= np.linalg.norm(ir)
 
@@ -106,10 +106,10 @@ def get_gaussian_ir(r, f_symbol, n_up):
     t_sample = T_symbol / n_up  # length of one sample is the symbol-duration divided by the oversampling factor (=1/sampling rate)
     
     # time indices and sampled time
-    k_steps = np.arange( - T_symbol / t_sample / 2, T_symbol / t_sample / 2 + 1 ) # TODO: Länge anpassen 
+    k_steps = np.arange(- T_symbol / t_sample / 2, T_symbol / t_sample / 2 + 1) # TODO: Länge anpassen 
     t_steps = k_steps * t_sample
 
-    ir = ( r / np.sqrt( np.pi )) * np.exp( -np.square( r * t_steps ))    
+    ir = (r / np.sqrt(np.pi)) * np.exp(-np.square(r * t_steps))    
     ir /= np.linalg.norm(ir)
 
     return t_sample, ir
@@ -137,15 +137,15 @@ def generate_signal(modulation, data, pulse, syms):
     assert isinstance(data, (list, np.ndarray)), "Send data should be a list or numpy array"
     assert syms >= 0 and isinstance(syms, int), "syms should be positive int or zero"
 
-    send_symbols = [ modulation[str(symbol)] for symbol in data ]
+    send_symbols = [modulation[str(symbol)] for symbol in data]
 
     if syms == 0:
-        send_symbols_up = np.zeros( len(data) * pulse.size )
-        send_symbols_up[ : : pulse.size ] = send_symbols
+        send_symbols_up = np.zeros(len(data) * pulse.size)
+        send_symbols_up[ : : pulse.size] = send_symbols
     else:
         n_up = int((pulse.size - 1) / (2 * syms))
-        send_symbols_up = np.zeros( len(data) * n_up )
-        send_symbols_up[ : : n_up ] = send_symbols
+        send_symbols_up = np.zeros(len(data) * n_up)
+        send_symbols_up[ : : n_up] = send_symbols
     
     send_signal = np.convolve(pulse, send_symbols_up)
 
