@@ -16,8 +16,7 @@ plt.rc('text', usetex=True)
 
 # parameters of the filters
 f_symbol = 32e9  # symbol rate (Baud) (Symbols per second)
-f_sample = 32e10  # sample rate (Hz) (Samples per second)
-n_up = 1 # samples per symbol (>1 => oversampling)
+n_up = 10 # samples per symbol (>1 => oversampling)
 
 r_rc = .33
 r_rrc = .33
@@ -25,9 +24,9 @@ r_gaussian = 0.8
 
 syms_per_filt = 4  # symbols per filter (plus minus in both directions)
 
-t_sample_rc, rc = get_rc_ir( syms_per_filt, r_rc, f_symbol, f_sample, n_up )
-t_sample_rrc, rrc = get_rrc_ir( syms_per_filt, r_rrc, f_symbol, f_sample, n_up )
-t_sample_gaussian, gaussian = get_gaussian_ir( r_gaussian, f_symbol, f_sample, n_up )
+t_sample_rc, rc = get_rc_ir( syms_per_filt, r_rc, f_symbol, n_up )
+t_sample_rrc, rrc = get_rrc_ir( syms_per_filt, r_rrc, f_symbol, n_up )
+t_sample_gaussian, gaussian = get_gaussian_ir( r_gaussian, f_symbol, n_up )
 
 matplotlib.rc('figure', figsize=(24, 12) )
 
@@ -43,8 +42,8 @@ plt.title( 'Impulse Responses' )
 
 # Comparison of convolved rrc with rc
 
-t_rc, rc = get_rc_ir( syms_per_filt, r_rc, f_symbol, f_sample, n_up )
-t_rrc, rrc = get_rrc_ir( syms_per_filt, r_rrc, f_symbol, f_sample, n_up )
+t_rc, rc = get_rc_ir( syms_per_filt, r_rc, f_symbol, n_up )
+t_rrc, rrc = get_rrc_ir( syms_per_filt, r_rrc, f_symbol, n_up )
 
 rrc_convolved = np.convolve(rrc, rrc, mode='same')
 rrc_convolved /= np.linalg.norm(rrc_convolved)
