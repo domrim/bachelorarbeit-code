@@ -122,7 +122,7 @@ def generate_signal(modulation, data, pulse, syms):
     
     This function calculates send signal with variable 
     
-    NOTE: If pulse doesn't meet the nyquist isi criterion hand syms = 0 to the function.
+    NOTE: If pulse doesn't meet the nyquist isi criterion set syms = 0.
 
     :param modulation: Dict mapping symbols to send-values. Ie {00: 1+1j, 01: 1-1j, 11: -1-1j, 10: -1+1j} 
     :param data: Data to send. Should be an array containing the symbols.
@@ -181,30 +181,40 @@ def splitstepfourier(u0, dt, dz, nz, alpha, beta2, gamma):
     # Linear operator (frequency domain)
     linear_operator = np.exp((-alpha/2 - 1j * beta2 / 2 * np.square(dw)) * dz)
     linear_operator_halfstep = np.exp((-alpha/2 - 1j * beta2 / 2 * np.square(dw)) * dz / 2)
-    print(linear_operator)
 
     # Nonlinear operator (time domain)
     nonlinear_operator = lambda u : np.exp(-1j * gamma * np.square(np.absolute(u)) * dz)
 
-    # Start (half linear step)
     start = u0
+    # Start (half linear step)
+    print("Starting Linear Halfstep")
     f_temp = np.fft.fft(start)
     f_temp = f_temp * linear_operator_halfstep
-    
-    # Main Loop (nz-1 nonlinear + full linear steps)
-    for step in range(1,nz-1):
-        temp = np.fft.ifft(f_temp)
-        temp = temp * nonlinear_operator(temp)
-        f_temp = np.fft.fft(temp)
-        f_temp = f_temp * linear_operator
-    
-    # End (nonlinear + half linear step)
+    # First Nonlinear step
+    print("Nonlinear Step")
     temp = np.fft.ifft(f_temp)
     temp = temp * nonlinear_operator(temp)
+    
+    # Main Loop (nz-1 * (full linear steps + nonlinear steps))
+    for step in range(1,nz):
+        # Full linear step
+        print(f"Full Linear Step {step}")
+        f_temp = np.fft.fft(temp)
+        f_temp = f_temp * linear_operator
+        # Nonlinear Step
+        print("Nonlinear Step")
+        temp = np.fft.ifft(f_temp)
+        temp = temp * nonlinear_operator(temp)
+    
+    # End (half linear step)
+    print("Last Linear Halfstep")
     f_temp = np.fft.fft(temp)
     f_end = f_temp * linear_operator_halfstep
     
     output = np.fft.ifft(f_end)
     
-    return output,linear_operator
+    return output,linear_operator,nonlinear_operator(start)
+
+
+
 

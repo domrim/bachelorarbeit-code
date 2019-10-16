@@ -62,8 +62,7 @@ plt.title('Impulse Responses')
 # modulation scheme and constellation points
 M = 2
 modulation = {'0': -1, '1': 1}
-
-n_symbol = 4  # number of symbols
+n_symbol = 4 # number of symbols
 
 # Signalfolge generieren
 send_bits = np.random.choice([symbol for symbol in modulation.keys()], size=n_symbol)
@@ -82,8 +81,8 @@ plt.stem(np.arange(n_symbol/f_symbol, step=1/f_symbol)+syms_per_filt/f_symbol, [
 plt.grid( True )
 plt.ylim(-1.1, 1.1)
 plt.xlabel('$t[s]$')
-plt.legend( loc='upper right' )
-plt.title( 'Modulation RC/RRC' )
+plt.legend(loc='upper right')
+plt.title('Modulation RC/RRC')
 
 plt.subplot(122)
 plt.plot(np.arange(send_gaussian.size)*t_sample_gaussian, send_gaussian, linewidth=2.0, label='Send Gaussian')
@@ -92,44 +91,52 @@ plt.stem(np.arange(8*n_symbol/f_symbol, step=8/f_symbol)+syms_per_filt/f_symbol,
 plt.grid( True )
 plt.ylim(-1.1, 1.1)
 plt.xlabel('$t[s]$')
-plt.legend( loc='upper right' )
-plt.title( 'Modulation Gaus' )
+plt.legend(loc='upper right')
+plt.title('Modulation Gaus')
 
 
 # Transmission
 get_ipython().run_line_magic('run', 'split_step_fourier.ipynb')
 
 
-z_length = 5000
-nz = 10
-dz = z_length / nz
+z_length = 10  # [km]
+nz = 2  # steps
+dz = z_length / nz  # [km]
 
-alpha = 0  # Dämpfung (dB/km)
-D = 17  # ps/nm/km
-beta2 = -np.square(1550e-9) * ( D * 1e-6 ) / ( 2 * np.pi * 3e8)  # propagation constant
-gamma = 0 # ps/km
+alpha = 0  # Dämpfung [dB/km]
+D = 17  # [ps/nm/km]
+beta2 = - (D * np.square(1550e-9)) / (2 * np.pi * 3e8) * 1e-3 # [s^2/km] propagation constant, lambda=1550nm is standard single-mode wavelength
+gamma = 0.5e-3 # [1/W/km]
 
-output, linop = splitstepfourier(send_rc, t_sample_rc, dz, nz, alpha, beta2, gamma)
+output, linop, nonlinop = splitstepfourier(send_rc, t_sample_rc, dz, nz, alpha, beta2, gamma)
 
-matplotlib.rc('figure', figsize=(24, 12) )
+matplotlib.rc('figure', figsize=(24, 24))
 
-plt.subplot(311)
-plt.plot( np.square(abs(send_rc)), linewidth=2.0, label='Send' )
-plt.plot( np.square(abs(output)), linewidth=2.0, label='Output' )
+plt.subplot(411)
+plt.plot(np.square(abs(send_rc)), linewidth=2.0, label='Send')
+plt.plot(np.square(abs(output)), linewidth=2.0, label='Output')
 
-plt.grid( True )
-plt.legend( loc='upper right' )
-plt.title( 'Impulse Responses' )
+plt.grid(True)
+plt.legend(loc='upper right')
 
-plt.subplot(312)
-plt.plot( np.fft.fftshift(np.square(abs(t_sample_gaussian*np.fft.fft(send_rc)/np.sqrt(2*np.pi)))), linewidth=2.0, label='Send' )
-plt.plot( np.fft.fftshift(np.square(abs(t_sample_gaussian*np.fft.fft(output)/np.sqrt(2*np.pi)))), linewidth=2.0, label='Output')
+plt.subplot(412)
+plt.plot(np.fft.fftshift(np.angle(linop)), label='Phase Linear operator')
 
-plt.subplot(313)
-plt.plot( np.fft.fftshift(np.angle(linop)))
+plt.grid(True)
+plt.legend(loc='upper right')
 
+plt.subplot(413)
+plt.plot(np.fft.fftshift(np.square(abs(t_sample_gaussian*np.fft.fft(send_rc)/np.sqrt(2*np.pi)))), linewidth=2.0, label='Send')
+plt.plot(np.fft.fftshift(np.square(abs(t_sample_gaussian*np.fft.fft(output)/np.sqrt(2*np.pi)))), linewidth=2.0, label='Output')
 
+plt.grid(True)
+plt.legend(loc='upper right')
 
+plt.subplot(414)
+plt.plot(np.fft.fftshift(np.fft.fft(nonlinop)))
+
+plt.grid(True)
+#plt.legend(loc='upper right')
 
 
 
