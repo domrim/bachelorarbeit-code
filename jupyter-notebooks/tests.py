@@ -4,10 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
 
-import sys
-import os
-
-get_ipython().run_line_magic('run', 'split_step_fourier.ipynb')
+get_ipython().run_line_magic('run', './split_step_fourier.ipynb')
 
 # showing figures inline
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -18,9 +15,9 @@ plt.rc('text', usetex=True)
 
 
 # parameters of the filters
-f_symbol = 1.0  # symbol rate (Baud) (Symbols per second)
-f_sample = 10  # sample rate (Hz) (Samples per second)
-n_up = 100 # samples per symbol (>1 => oversampling)
+f_symbol = 32e9  # symbol rate (Baud) (Symbols per second)
+f_sample = 32e10  # sample rate (Hz) (Samples per second)
+n_up = 1 # samples per symbol (>1 => oversampling)
 
 r_rc = .33
 r_rrc = .33
@@ -30,7 +27,7 @@ syms_per_filt = 4  # symbols per filter (plus minus in both directions)
 
 t_sample_rc, rc = get_rc_ir( syms_per_filt, r_rc, f_symbol, f_sample, n_up )
 t_sample_rrc, rrc = get_rrc_ir( syms_per_filt, r_rrc, f_symbol, f_sample, n_up )
-t_sample_gaussian, gaussian = get_gaussian_ir( r_gaussian, f_symbol/2/syms_per_filt, f_sample, n_up )
+t_sample_gaussian, gaussian = get_gaussian_ir( r_gaussian, f_symbol, f_sample, n_up )
 
 matplotlib.rc('figure', figsize=(24, 12) )
 
@@ -101,21 +98,23 @@ plt.title( 'Modulation Gaus' )
 
 
 # Transmission
+get_ipython().run_line_magic('run', 'split_step_fourier.ipynb')
 
-z_length = 5
-nz = 2000
+
+z_length = 5000
+nz = 10
 dz = z_length / nz
 
-alpha=0.2  # Dämpfung (dB/km)
+alpha = 0  # Dämpfung (dB/km)
 D = 17  # ps/nm/km
 beta2 = -np.square(1550e-9) * ( D * 1e-6 ) / ( 2 * np.pi * 3e8)  # propagation constant
-gamma = 0.5e-6 # ps/km
+gamma = 0 # ps/km
 
-output = split_step_fourier.splitstepfourier(send_rc, t_sample_gaussian, dz, nz, alpha, beta2, gamma)
+output, linop = splitstepfourier(send_rc, t_sample_rc, dz, nz, alpha, beta2, gamma)
 
 matplotlib.rc('figure', figsize=(24, 12) )
 
-#plt.subplot(211)
+plt.subplot(311)
 plt.plot( np.square(abs(send_rc)), linewidth=2.0, label='Send' )
 plt.plot( np.square(abs(output)), linewidth=2.0, label='Output' )
 
@@ -123,9 +122,15 @@ plt.grid( True )
 plt.legend( loc='upper right' )
 plt.title( 'Impulse Responses' )
 
-#plt.subplot(212)
-#plt.plot( np.square(abs(t_sample_gaussian*np.fft.fft(send_gaussian)/np.sqrt(2*np.pi))), linewidth=2.0, label='Send' )
-#plt.plot( np.square(abs(t_sample_gaussian*np.fft.fft(output)/np.sqrt(2*np.pi))), linewidth=2.0, label='Output')
+plt.subplot(312)
+plt.plot( np.fft.fftshift(np.square(abs(t_sample_gaussian*np.fft.fft(send_rc)/np.sqrt(2*np.pi)))), linewidth=2.0, label='Send' )
+plt.plot( np.fft.fftshift(np.square(abs(t_sample_gaussian*np.fft.fft(output)/np.sqrt(2*np.pi)))), linewidth=2.0, label='Output')
+
+plt.subplot(313)
+plt.plot( np.fft.fftshift(np.angle(linop)))
+
+
+
 
 
 

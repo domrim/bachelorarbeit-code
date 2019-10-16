@@ -180,10 +180,15 @@ def splitstepfourier(u0, dt, dz, nz, alpha, beta2, gamma):
 
     nt = len(u0)
     dw = 2 * np.pi * np.append(np.arange(nt/2), np.arange(-nt/2, 0)) / (dt * nt)
+    print(dw)
+    dw = np.fft.fftfreq(nt,1/dt)
+    print(dw)
+    print(dz)
 
     # Linear operator (frequency domain)
     linear_operator = np.exp((-alpha/2 - 1j * beta2 / 2 * np.square(dw)) * dz)
     linear_operator_halfstep = np.exp((-alpha/2 - 1j * beta2 / 2 * np.square(dw)) * dz / 2)
+    print(linear_operator)
 
     # Nonlinear operator (time domain)
     nonlinear_operator = lambda u : np.exp(-1j * gamma * np.square(np.absolute(u)) * dz)
@@ -208,5 +213,5 @@ def splitstepfourier(u0, dt, dz, nz, alpha, beta2, gamma):
     
     output = np.fft.ifft(f_end)
     
-    return output
+    return output,linear_operator
 
