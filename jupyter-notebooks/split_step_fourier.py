@@ -176,11 +176,7 @@ def splitstepfourier(u0, dt, dz, nz, alpha, beta2, gamma):
     assert isinstance(u0, np.ndarray), "Input signal should be a numpy array."
 
     nt = len(u0)
-    dw = 2 * np.pi * np.append(np.arange(nt/2), np.arange(-nt/2, 0)) / (dt * nt)
-    print(dw)
-    dw = np.fft.fftfreq(nt,1/dt)
-    print(dw)
-    print(dz)
+    dw = 2 * np.pi * np.fft.fftfreq(nt,dt)
 
     # Linear operator (frequency domain)
     linear_operator = np.exp((-alpha/2 - 1j * beta2 / 2 * np.square(dw)) * dz)
