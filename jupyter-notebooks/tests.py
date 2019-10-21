@@ -20,19 +20,21 @@ n_up = 10 # samples per symbol (>1 => oversampling)
 
 r_rc = .33
 r_rrc = .33
-r_gaussian = 0.8
+r_gaussian = 8.24265e10
 
 syms_per_filt = 4  # symbols per filter (plus minus in both directions)
 
 t_sample_rc, rc = get_rc_ir(syms_per_filt, r_rc, f_symbol, n_up)
 t_sample_rrc, rrc = get_rrc_ir(syms_per_filt, r_rrc, f_symbol, n_up)
-t_sample_gaussian, gaussian = get_gaussian_ir(r_gaussian, f_symbol, n_up)
+t_sample_gaussian, gaussian = get_gaussian_ir(syms_per_filt, f_symbol, n_up)
+t_sample_gaussian2, gaussian2 = get_gaussian_ir2(syms_per_filt, r_gaussian, f_symbol, n_up)
 
 matplotlib.rc('figure', figsize=(24, 12) )
 
 plt.plot(np.arange(rc.size)*t_sample_rc, rc, linewidth=2.0, label='RC')
 plt.plot(np.arange(rrc.size)*t_sample_rrc, rrc, linewidth=2.0, label='RRC')
 plt.plot(np.arange(gaussian.size)*t_sample_gaussian, gaussian, linewidth=2.0, label='Gaussian')
+plt.plot(np.arange(gaussian.size)*t_sample_gaussian2, gaussian2, linewidth=2.0, label='Gaussian2')
 
 plt.grid( True )
 plt.legend( loc='upper right' )
