@@ -220,27 +220,22 @@ def splitstepfourier(u0, dt, dz, nz, alpha, beta2, gamma):
 
     start = u0
     # Start (half linear step)
-    print("Starting Linear Halfstep")
     f_temp = np.fft.fft(start)
     f_temp = f_temp * linear_operator_halfstep
     # First Nonlinear step
-    print("Nonlinear Step")
     temp = np.fft.ifft(f_temp)
     temp = temp * nonlinear_operator(temp)
     
     # Main Loop (nz-1 * (full linear steps + nonlinear steps))
     for step in range(1,nz):
         # Full linear step
-        print(f"Full Linear Step {step}")
         f_temp = np.fft.fft(temp)
         f_temp = f_temp * linear_operator
         # Nonlinear Step
-        print("Nonlinear Step")
         temp = np.fft.ifft(f_temp)
         temp = temp * nonlinear_operator(temp)
     
     # End (half linear step)
-    print("Last Linear Halfstep")
     f_temp = np.fft.fft(temp)
     f_end = f_temp * linear_operator_halfstep
     
