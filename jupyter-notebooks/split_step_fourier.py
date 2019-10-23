@@ -107,7 +107,6 @@ def get_gaussian_ir(syms, f_symbol, n_up):
     t_sample = T_symbol / n_up  # length of one sample is the symbol-duration divided by the oversampling factor (=1/sampling rate)
     T_ir = 2 * syms * T_symbol  # Duration of the impulse response is positive and negative normed symbols added multplied by Symbol Duration
     r = 2.57583 / T_symbol
-    print(r)
     
     # time indices and sampled time
     k_steps = np.arange(- T_ir / t_sample / 2, T_ir / t_sample / 2 + 1, dtype=int)
@@ -242,7 +241,4 @@ def splitstepfourier(u0, dt, dz, nz, alpha, beta2, gamma):
     output = np.fft.ifft(f_end)
     
     return output,linear_operator,nonlinear_operator(start)
-
-
-
 

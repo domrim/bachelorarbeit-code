@@ -3,13 +3,18 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
+try:
+    from jupyterthemes import jtplot
+    jtplot.style()
+except:
+    pass
 
 get_ipython().run_line_magic('run', './split_step_fourier.ipynb')
 
 # showing figures inline
 get_ipython().run_line_magic('matplotlib', 'inline')
 # plotting options 
-font = {'size'   : 20}
+font = {'size': 12}
 plt.rc('font', **font)
 plt.rc('text', usetex=True)
 
@@ -20,26 +25,23 @@ n_up = 10 # samples per symbol (>1 => oversampling)
 
 r_rc = .33
 r_rrc = .33
-r_gaussian = 8.24265e10
 
 syms_per_filt = 4  # symbols per filter (plus minus in both directions)
 
 t_sample_rc, rc = get_rc_ir(syms_per_filt, r_rc, f_symbol, n_up)
 t_sample_rrc, rrc = get_rrc_ir(syms_per_filt, r_rrc, f_symbol, n_up)
 t_sample_gaussian, gaussian = get_gaussian_ir(syms_per_filt, f_symbol, n_up)
-t_sample_gaussian2, gaussian2 = get_gaussian_ir2(syms_per_filt, r_gaussian, f_symbol, n_up)
 
-matplotlib.rc('figure', figsize=(24, 12) )
+fig1 = plt.figure(figsize=(16, 9))
+sbplt11 = fig1.add_subplot(111)
+rc_plt, = sbplt11.plot(np.arange(rc.size)*t_sample_rc, rc, linewidth=2.0, label='RC')
+rrc_plt, = sbplt11.plot(np.arange(rrc.size)*t_sample_rrc, rrc, linewidth=2.0, label='RRC')
+gauss_plt, = sbplt11.plot(np.arange(gaussian.size)*t_sample_gaussian, gaussian, linewidth=2.0, label='Gaussian')
 
-plt.plot(np.arange(rc.size)*t_sample_rc, rc, linewidth=2.0, label='RC')
-plt.plot(np.arange(rrc.size)*t_sample_rrc, rrc, linewidth=2.0, label='RRC')
-plt.plot(np.arange(gaussian.size)*t_sample_gaussian, gaussian, linewidth=2.0, label='Gaussian')
-plt.plot(np.arange(gaussian.size)*t_sample_gaussian2, gaussian2, linewidth=2.0, label='Gaussian2')
-
-plt.grid( True )
-plt.legend( loc='upper right' )
-plt.xlabel('$t[s]$')
-plt.title( 'Impulse Responses' )
+sbplt11.grid( True )
+sbplt11.legend( loc='upper right' )
+sbplt11.set_xlabel('$t[s]$')
+sbplt11.set_title( 'Impulse Responses' )
 
 
 # Comparison of convolved rrc with rc
@@ -50,15 +52,15 @@ t_rrc, rrc = get_rrc_ir(syms_per_filt, r_rrc, f_symbol, n_up)
 rrc_convolved = np.convolve(rrc, rrc, mode='same')
 rrc_convolved /= np.linalg.norm(rrc_convolved)
 
-matplotlib.rc('figure', figsize=(24, 12))
+fig2 = plt.figure(figsize=(16, 9))
+sbplt21 = fig2.add_subplot(111)
+sbplt21.plot(np.arange(rc.size)*t_sample_rc, rc , linewidth=2.0, label='RC')
+sbplt21.plot(np.arange(rrc_convolved.size)*t_sample_rrc, rrc_convolved, linewidth=2.0, label='Convolved RRC')
 
-plt.plot(np.arange(rc.size)*t_sample_rc, rc , linewidth=2.0, label='RC')
-plt.plot(np.arange(rrc_convolved.size)*t_sample_rrc, rrc_convolved, linewidth=2.0, label='Convolved RRC')
-
-plt.grid( True )
-plt.legend(loc='upper right')
-plt.xlabel('$t[s]$')
-plt.title('Impulse Responses')
+sbplt21.grid( True )
+sbplt21.legend(loc='upper right')
+sbplt21.set_xlabel('$t[s]$')
+sbplt21.set_title('Impulse Responses')
 
 
 # modulation scheme and constellation points
@@ -73,72 +75,69 @@ send_rc = generate_signal(modulation, send_bits, rc, syms_per_filt)
 send_rrc = generate_signal(modulation, send_bits, rrc, syms_per_filt)
 send_gaussian = generate_signal(modulation, send_bits, gaussian, 0)
 
-matplotlib.rc('figure', figsize=(24, 12) )
+fig3 = plt.figure(figsize=(16, 9))
+sbplt31 = fig3.add_subplot(121)
+sbplt31.plot(np.arange(send_rc.size)*t_sample_rc, send_rc, linewidth=2.0, label='Send RC')
+sbplt31.plot(np.arange(send_rrc.size)*t_sample_rrc, send_rrc, linewidth=2.0, label='Send RRC')
+sbplt31.stem(np.arange(n_symbol/f_symbol, step=1/f_symbol)+syms_per_filt/f_symbol, [ modulation[str(symbol)] for symbol in send_bits ], label='Send symbols', use_line_collection=True, basefmt=' ')
 
-plt.subplot(121)
-plt.plot(np.arange(send_rc.size)*t_sample_rc, send_rc, linewidth=2.0, label='Send RC')
-plt.plot(np.arange(send_rrc.size)*t_sample_rrc, send_rrc, linewidth=2.0, label='Send RRC')
-plt.stem(np.arange(n_symbol/f_symbol, step=1/f_symbol)+syms_per_filt/f_symbol, [ modulation[str(symbol)] for symbol in send_bits ], label='Send symbols', use_line_collection=True, basefmt=' ')
+sbplt31.grid( True )
+sbplt31.legend(loc='upper right')
+sbplt31.set_ylim(-1.1, 1.1)
+sbplt31.set_xlabel('$t[s]$')
+sbplt31.set_title('Modulation RC/RRC')
 
-plt.grid( True )
-plt.ylim(-1.1, 1.1)
-plt.xlabel('$t[s]$')
-plt.legend(loc='upper right')
-plt.title('Modulation RC/RRC')
+sbplt32 = fig3.add_subplot(122)
+sbplt32.plot(np.arange(send_gaussian.size)*t_sample_gaussian, send_gaussian, linewidth=2.0, label='Send Gaussian')
+sbplt32.stem(np.arange(8*n_symbol/f_symbol, step=8/f_symbol)+syms_per_filt/f_symbol, [ modulation[str(symbol)] for symbol in send_bits ], label='Send symbols', use_line_collection=True, basefmt=' ')
 
-plt.subplot(122)
-plt.plot(np.arange(send_gaussian.size)*t_sample_gaussian, send_gaussian, linewidth=2.0, label='Send Gaussian')
-plt.stem(np.arange(8*n_symbol/f_symbol, step=8/f_symbol)+syms_per_filt/f_symbol, [ modulation[str(symbol)] for symbol in send_bits ], label='Send symbols', use_line_collection=True, basefmt=' ')
-
-plt.grid( True )
-plt.ylim(-1.1, 1.1)
-plt.xlabel('$t[s]$')
-plt.legend(loc='upper right')
-plt.title('Modulation Gaus')
+sbplt32.grid( True )
+sbplt32.legend(loc='upper right')
+sbplt32.set_ylim(-1.1, 1.1)
+sbplt32.set_xlabel('$t[s]$')
+sbplt32.set_title('Modulation Gaus')
 
 
 # Transmission
 get_ipython().run_line_magic('run', 'split_step_fourier.ipynb')
 
-
-z_length = 10  # [km]
-nz = 2  # steps
+z_length = 70  # [km]
+nz = 100  # steps
 dz = z_length / nz  # [km]
 
 alpha = 0  # Dämpfung [dB/km]
 D = 17  # [ps/nm/km]
 beta2 = - (D * np.square(1550e-9)) / (2 * np.pi * 3e8) * 1e-3 # [s^2/km] propagation constant, lambda=1550nm is standard single-mode wavelength
-gamma = 0.5e-3 # [1/W/km]
+gamma = 1.3 # [1/W/km]
 
-output, linop, nonlinop = splitstepfourier(send_rc, t_sample_rc, dz, nz, alpha, beta2, gamma)
+output, linop, nonlinop = splitstepfourier(send_rrc, t_sample_rrc, dz, nz, alpha, beta2, gamma)
 
-matplotlib.rc('figure', figsize=(24, 24))
+fig4 = plt.figure(figsize=(16, 9))
+sbplt41 = fig4.add_subplot(411)
+sbplt41.plot(np.square(abs(send_rc)), linewidth=2.0, label='Send')
+sbplt41.plot(np.square(abs(output)), linewidth=2.0, label='Output')
 
-plt.subplot(411)
-plt.plot(np.square(abs(send_rc)), linewidth=2.0, label='Send')
-plt.plot(np.square(abs(output)), linewidth=2.0, label='Output')
+sbplt41.grid(True)
+sbplt41.legend(loc='upper right')
 
-plt.grid(True)
-plt.legend(loc='upper right')
+sbplt42 = fig4.add_subplot(412)
+sbplt42.plot(np.fft.fftshift(np.angle(linop)), label='Phase Linear operator')
 
-plt.subplot(412)
-plt.plot(np.fft.fftshift(np.angle(linop)), label='Phase Linear operator')
+sbplt42.grid(True)
+sbplt42.legend(loc='upper right')
 
-plt.grid(True)
-plt.legend(loc='upper right')
+sbplt43 = fig4.add_subplot(413)
+sbplt43.plot(np.fft.fftshift(np.square(abs(t_sample_gaussian*np.fft.fft(send_rrc)/np.sqrt(2*np.pi)))), linewidth=2.0, label='Input')
+sbplt43.plot(np.fft.fftshift(np.square(abs(t_sample_gaussian*np.fft.fft(output)/np.sqrt(2*np.pi)))), linewidth=2.0, label='Output')
 
-plt.subplot(413)
-plt.plot(np.fft.fftshift(np.square(abs(t_sample_gaussian*np.fft.fft(send_rc)/np.sqrt(2*np.pi)))), linewidth=2.0, label='Send')
-plt.plot(np.fft.fftshift(np.square(abs(t_sample_gaussian*np.fft.fft(output)/np.sqrt(2*np.pi)))), linewidth=2.0, label='Output')
+sbplt43.grid(True)
+sbplt43.legend(loc='upper right')
 
-plt.grid(True)
-plt.legend(loc='upper right')
+sbplt44 = fig4.add_subplot(414)
+sbplt44.plot(np.fft.fftshift(np.fft.fft(nonlinop)), label='Frequency')
 
-plt.subplot(414)
-plt.plot(np.fft.fftshift(np.fft.fft(nonlinop)))
-
-plt.grid(True)
-#plt.legend(loc='upper right')
+sbplt44.grid(True)
+sbplt44.legend(loc='upper right')
 
 
 
