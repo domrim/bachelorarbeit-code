@@ -118,35 +118,6 @@ def get_gaussian_ir(syms, f_symbol, n_up):
     return t_sample, ir
 
 
-def get_gaussian_ir2(syms, r, f_symbol, n_up):
-    """Determines normed coefficients of an Gaussian filter
-
-    :param syms: "normed" length of ir. ir-length will be 2*syms+1
-    :param r: roll-off factor [Float]
-    :param f_symbol: symbol rate [Baud]
-    :param n_up: upsampling factor [Int]
-    
-    :returns: tuple containing time-index-array and impulse response in an array
-
-    """
-    
-    # integral -t/2 bis t/2 e^-x^2/kappa dz = 0,95*gesamtleistung
-    # initialize sample time
-    T_symbol = 1.0 / f_symbol  # Symbol time; in this case = pulse length
-    t_sample = T_symbol / n_up  # length of one sample is the symbol-duration divided by the oversampling factor (=1/sampling rate)
-    T_ir = 2 * syms * T_symbol  # Duration of the impulse response is positive and negative normed symbols added multplied by Symbol Duration
-    print(r)
-    
-    # time indices and sampled time
-    k_steps = np.arange(- T_ir / t_sample / 2, T_ir / t_sample / 2 + 1, dtype=int)
-    t_steps = k_steps * t_sample
-
-    ir = (r / np.sqrt(np.pi)) * np.exp(-np.square(r * t_steps))    
-    ir /= np.linalg.norm(ir)
-
-    return t_sample, ir
-
-
 # Pulse forming
 
 def generate_signal(modulation, data, pulse, syms):

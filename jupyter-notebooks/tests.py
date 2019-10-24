@@ -79,7 +79,7 @@ fig3 = plt.figure(figsize=(16, 9))
 sbplt31 = fig3.add_subplot(121)
 sbplt31.plot(np.arange(send_rc.size)*t_sample_rc, send_rc, linewidth=2.0, label='Send RC')
 sbplt31.plot(np.arange(send_rrc.size)*t_sample_rrc, send_rrc, linewidth=2.0, label='Send RRC')
-sbplt31.stem(np.arange(n_symbol/f_symbol, step=1/f_symbol)+syms_per_filt/f_symbol, [ modulation[str(symbol)] for symbol in send_bits ], label='Send symbols', use_line_collection=True, basefmt=' ')
+sbplt31.stem(np.arange(len(send_bits)/f_symbol, step=1/f_symbol), [ modulation[str(symbol)] for symbol in send_bits ], label='Send symbols', use_line_collection=True, basefmt=' ')
 
 sbplt31.grid( True )
 sbplt31.legend(loc='upper right')
@@ -89,7 +89,7 @@ sbplt31.set_title('Modulation RC/RRC')
 
 sbplt32 = fig3.add_subplot(122)
 sbplt32.plot(np.arange(send_gaussian.size)*t_sample_gaussian, send_gaussian, linewidth=2.0, label='Send Gaussian')
-sbplt32.stem(np.arange(8*n_symbol/f_symbol, step=8/f_symbol)+syms_per_filt/f_symbol, [ modulation[str(symbol)] for symbol in send_bits ], label='Send symbols', use_line_collection=True, basefmt=' ')
+sbplt32.stem(np.arange(2*syms_per_filt*n_symbol/f_symbol, step=2*syms_per_filt/f_symbol), [ modulation[str(symbol)] for symbol in send_bits ], label='Send symbols', use_line_collection=True, basefmt=' ')
 
 sbplt32.grid( True )
 sbplt32.legend(loc='upper right')
