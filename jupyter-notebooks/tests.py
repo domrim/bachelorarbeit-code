@@ -99,8 +99,6 @@ sbplt32.set_title('Modulation Gaus')
 
 
 # Transmission
-get_ipython().run_line_magic('run', 'split_step_fourier.ipynb')
-
 z_length = 70  # [km]
 nz = 100  # steps
 dz = z_length / nz  # [km]
@@ -138,7 +136,4 @@ sbplt44.plot(np.fft.fftshift(np.fft.fft(nonlinop)), label='Frequency')
 
 sbplt44.grid(True)
 sbplt44.legend(loc='upper right')
-
-
-
 

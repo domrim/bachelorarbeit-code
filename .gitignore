@@ -138,3 +138,9 @@ dmypy.json
 .pyre/
 
 # End of https://www.gitignore.io/api/jupyternotebooks,python
+
+jupyter-notebooks/demo_python.png
+
+matlab/vars.mat
+
+matlab/demo_matlab.png

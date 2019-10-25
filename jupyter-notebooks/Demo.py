@@ -40,9 +40,10 @@ n_symbol = 4 # number of symbols
 # generate send signal
 send_bits = np.random.choice([symbol for symbol in modulation.keys()], size=n_symbol)
 
-#send_rc = generate_signal(modulation, send_bits, rc, syms_per_filt)
-#send_rrc = generate_signal(modulation, send_bits, rrc, syms_per_filt)
-#send_gaussian = generate_signal(modulation, send_bits, gaussian, 0)
+send_rc = generate_signal(modulation, send_bits, rc, syms_per_filt)
+send_rrc = generate_signal(modulation, send_bits, rrc, syms_per_filt)
+send_gaussian = generate_signal(modulation, send_bits, gaussian, 0)
+
 
 # Transmission
 z_length = 30  # [km]
@@ -57,7 +58,7 @@ gamma = 1.3 # [1/W/km]
 output, linop, nonlinop = splitstepfourier(send_rc, t_sample_rc, dz, nz, alpha, beta2, gamma)
 
 # export to mat file
-sio.savemat('vars.mat', {'u0': send_rc, 'dt': t_sample_rc, 'dz': dz, 'nz': nz, 'alpha': alpha, 'betap': [0, 0, beta2], 'gamma': gamma})
+sio.savemat('../matlab/vars.mat', {'u0': send_rc, 'dt': t_sample_rc, 'dz': dz, 'nz': nz, 'alpha': alpha, 'betap': [0, 0, beta2], 'gamma': gamma})
 
 
 # Plotting
@@ -76,7 +77,4 @@ sbplt2.plot(np.fft.fftshift(np.square(abs(t_sample_rc*np.fft.fft(output)/np.sqrt
 sbplt2.grid(True)
 sbplt2.legend(loc='upper right')
 fig.savefig("demo_python.png")
-
-
-
 
