@@ -157,10 +157,11 @@ def generate_signal(modulation, data, pulse, syms):
 
 # SplitStep Fourier Function
 
-def splitstepfourier(u0, dt, dz, nz, alpha, beta2, gamma):
+def splitstepfourier(u0, dt, dz, nz, alpha, beta2, gamma, return_array=False):
     """Split-step fourier method
     
     This function solves the nonlinear Schrodinger equation for pulse propagation in an optical fiber using the split-step Fourier method.
+    The actual implementation is the "symtrical split-step-fourier", it starts with 
     Python-Implementation of the Matlab-Code from "SSPROP" found here: https://www.photonics.umd.edu/software/ssprop/
     
     NOTE: Dimensions / Units of the params can be anything. They just have to be consistent.
@@ -172,14 +173,21 @@ def splitstepfourier(u0, dt, dz, nz, alpha, beta2, gamma):
     :param alpha: power loss coeficient
     :param beta2: dispersion polynomial coefficient
     :param gamma: nonlinearity coefficient
+    :param return_array: Flag if only signal at end of phase or after every step should be returned
     
-    :returns: signal at the output
+    :returns:
+        if return_array = True:
+            dict containing steps calculated up to this point as key and signal at this point as value from beginning till end of fiber
+        else:
+            signal at the end of the fiber
 
     """
     assert isinstance(u0, np.ndarray), "Input signal should be a numpy array."
 
     nt = len(u0)
     dw = 2 * np.pi * np.fft.fftfreq(nt,dt)
+    if return_array:
+        output = {}
 
     # Linear operator (frequency domain)
     linear_operator = np.exp((-alpha/2 - 1j * beta2 / 2 * np.square(dw)) * dz)
@@ -195,6 +203,9 @@ def splitstepfourier(u0, dt, dz, nz, alpha, beta2, gamma):
     # First Nonlinear step
     temp = np.fft.ifft(f_temp)
     temp = temp * nonlinear_operator(temp)
+    if return_array:
+        output['0.5'] = temp
+        
     
     # Main Loop (nz-1 * (full linear steps + nonlinear steps))
     for step in range(1,nz):
@@ -204,12 +215,18 @@ def splitstepfourier(u0, dt, dz, nz, alpha, beta2, gamma):
         # Nonlinear Step
         temp = np.fft.ifft(f_temp)
         temp = temp * nonlinear_operator(temp)
+        if return_array:
+            output[f'{0.5 + step}'] = temp
     
     # End (half linear step)
     f_temp = np.fft.fft(temp)
     f_end = f_temp * linear_operator_halfstep
+    end = np.fft.ifft(f_end)
     
-    output = np.fft.ifft(f_end)
+    if return_array:
+        output[f'{nz}'] = end
+    else:
+        output = end
     
     return output,linear_operator,nonlinear_operator(start)
 

@@ -2,11 +2,6 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-try:
-    from jupyterthemes import jtplot
-    jtplot.style()
-except:
-    pass
 
 get_ipython().run_line_magic('run', './split_step_fourier.ipynb')
 
