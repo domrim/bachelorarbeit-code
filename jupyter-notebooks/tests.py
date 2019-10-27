@@ -2,7 +2,6 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib
 try:
     from jupyterthemes import jtplot
     jtplot.style()
