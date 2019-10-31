@@ -3,6 +3,7 @@
 # Imports
 
 import numpy as np
+import scipy.special as special
 
 
 # Filter Definitions
@@ -106,7 +107,7 @@ def get_gaussian_ir(syms, f_symbol, n_up):
     T_symbol = 1.0 / f_symbol  # Symbol time; in this case = pulse length
     t_sample = T_symbol / n_up  # length of one sample is the symbol-duration divided by the oversampling factor (=1/sampling rate)
     T_ir = 2 * syms * T_symbol  # Duration of the impulse response is positive and negative normed symbols added multplied by Symbol Duration
-    r = 2.57583 / T_symbol
+    r = special.erfinv(energy_factor) * np.sqrt(2) / T_symbol
     
     # time indices and sampled time
     k_steps = np.arange(- T_ir / t_sample / 2, T_ir / t_sample / 2 + 1, dtype=int)
