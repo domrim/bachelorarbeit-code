@@ -26,13 +26,13 @@ def get_rc_ir(syms, r, f_symbol, n_up):
     
     # initialize output length and sample time
     T_symbol = 1.0 / f_symbol  # Duration of one Symbol
-    t_sample = T_symbol / n_up  # length of one sample is the symbol-duration divided by the oversampling factor (=1/sampling rate)
+    T_sample = T_symbol / n_up  # length of one sample is the symbol-duration divided by the oversampling factor (=1/sampling rate)
     T_ir = 2 * syms * T_symbol  # Duration of the impulse response is positive and negative normed symbols added multplied by Symbol Duration
-    ir = np.zeros(int(T_ir / t_sample) + 1)  # samples of impulse response is definied by duration of the ir divided by the sample time plus one for the 0th sample
+    ir = np.zeros(int(T_ir / T_sample) + 1)  # samples of impulse response is definied by duration of the ir divided by the sample time plus one for the 0th sample
 
     # time indices and sampled time
-    k_steps = np.arange(- T_ir / t_sample / 2, T_ir / t_sample / 2 + 1, dtype=int)
-    t_steps = k_steps * t_sample
+    k_steps = np.arange(- T_ir / T_sample / 2, T_ir / T_sample / 2 + 1, dtype=int)
+    t_steps = k_steps * T_sample
     
     for k in k_steps:
         
@@ -45,9 +45,9 @@ def get_rc_ir(syms, r, f_symbol, n_up):
         else:
             ir[ k ] = np.sin(np.pi * t_steps[k] / T_symbol) / np.pi / t_steps[k] * np.cos(r * np.pi * t_steps[k] / T_symbol)                    / (1.0 - (2.0 * r * t_steps[k] / T_symbol)**2)
     
-    ir /= np.linalg.norm(ir)
+    ir /= np.linalg.norm(ir) * np.sqrt(T_sample)
     
-    return t_sample, ir
+    return T_sample, ir
 
 
 def get_rrc_ir(syms, r, f_symbol, n_up):
@@ -67,13 +67,13 @@ def get_rrc_ir(syms, r, f_symbol, n_up):
     
     # initialize output length and sample time
     T_symbol = 1.0 / f_symbol  # Duration of one Symbol
-    t_sample = T_symbol / n_up  # length of one sample is the symbol-duration divided by the oversampling factor (=1/sampling rate)
+    T_sample = T_symbol / n_up  # length of one sample is the symbol-duration divided by the oversampling factor (=1/sampling rate)
     T_ir = 2 * syms * T_symbol  # Duration of the impulse response is positive and negative normed symbols added multplied by Symbol Duration
-    ir = np.zeros(int(T_ir / t_sample) + 1)  # samples of impulse response is definied by duration of the ir divided by the sample time plus one for the 0th sample
+    ir = np.zeros(int(T_ir / T_sample) + 1)  # samples of impulse response is definied by duration of the ir divided by the sample time plus one for the 0th sample
 
     # time indices and sampled time
-    k_steps = np.arange(- T_ir / t_sample / 2, T_ir / t_sample / 2 + 1, dtype=int)
-    t_steps = k_steps * t_sample
+    k_steps = np.arange(- T_ir / T_sample / 2, T_ir / T_sample / 2 + 1, dtype=int)
+    t_steps = k_steps * T_sample
     
     for k in k_steps.astype(int):
 
@@ -86,15 +86,16 @@ def get_rrc_ir(syms, r, f_symbol, n_up):
         else:
             ir[ k ] = ( 4.0 * r * t_steps[k] / T_symbol * np.cos(np.pi * (1.0 + r) * t_steps[k] / T_symbol) + np.sin(np.pi * (1.0 - r) * t_steps[k] / T_symbol))                    / (( 1.0 - (4.0 * r * t_steps[k] / T_symbol)**2) * np.pi * t_steps[k])
 
-    ir /= np.linalg.norm(ir)
+    ir /= np.linalg.norm(ir) * np.sqrt(T_sample)
 
-    return t_sample, ir
+    return T_sample, ir
 
 
-def get_gaussian_ir(syms, f_symbol, n_up):
+def get_gaussian_ir(syms, energy_factor, f_symbol, n_up):
     """Determines normed coefficients of an Gaussian filter
 
     :param syms: "normed" length of ir. ir-length will be 2*syms+1
+    :param energy_factor: factor to define how much engery of the complete pulse is between -T/2 and T/2
     :param f_symbol: symbol rate [Baud]
     :param n_up: upsampling factor [Int]
     
@@ -105,18 +106,18 @@ def get_gaussian_ir(syms, f_symbol, n_up):
     # integral -t/2 bis t/2 e^-x^2/kappa dz = 0,95*gesamtleistung
     # initialize sample time
     T_symbol = 1.0 / f_symbol  # Symbol time; in this case = pulse length
-    t_sample = T_symbol / n_up  # length of one sample is the symbol-duration divided by the oversampling factor (=1/sampling rate)
+    T_sample = T_symbol / n_up  # length of one sample is the symbol-duration divided by the oversampling factor (=1/sampling rate)
     T_ir = 2 * syms * T_symbol  # Duration of the impulse response is positive and negative normed symbols added multplied by Symbol Duration
     r = special.erfinv(energy_factor) * np.sqrt(2) / T_symbol
     
     # time indices and sampled time
-    k_steps = np.arange(- T_ir / t_sample / 2, T_ir / t_sample / 2 + 1, dtype=int)
-    t_steps = k_steps * t_sample
+    k_steps = np.arange(- T_ir / T_sample / 2, T_ir / T_sample / 2 + 1, dtype=int)
+    t_steps = k_steps * T_sample
 
     ir = (r / np.sqrt(np.pi)) * np.exp(-np.square(r * t_steps))    
-    ir /= np.linalg.norm(ir)
+    ir /= np.linalg.norm(ir) * np.sqrt(T_sample)
 
-    return t_sample, ir
+    return T_sample, ir
 
 
 # Pulse forming
