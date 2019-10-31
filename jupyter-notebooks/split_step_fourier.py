@@ -45,6 +45,7 @@ def get_rc_ir(syms, r, f_symbol, n_up):
         else:
             ir[ k ] = np.sin(np.pi * t_steps[k] / T_symbol) / np.pi / t_steps[k] * np.cos(r * np.pi * t_steps[k] / T_symbol)                    / (1.0 - (2.0 * r * t_steps[k] / T_symbol)**2)
     
+    # Norming on Energy = 1
     ir /= np.linalg.norm(ir) * np.sqrt(T_sample)
     
     return T_sample, ir
@@ -86,6 +87,7 @@ def get_rrc_ir(syms, r, f_symbol, n_up):
         else:
             ir[ k ] = ( 4.0 * r * t_steps[k] / T_symbol * np.cos(np.pi * (1.0 + r) * t_steps[k] / T_symbol) + np.sin(np.pi * (1.0 - r) * t_steps[k] / T_symbol))                    / (( 1.0 - (4.0 * r * t_steps[k] / T_symbol)**2) * np.pi * t_steps[k])
 
+    # Norming on Energy = 1
     ir /= np.linalg.norm(ir) * np.sqrt(T_sample)
 
     return T_sample, ir
@@ -115,6 +117,8 @@ def get_gaussian_ir(syms, energy_factor, f_symbol, n_up):
     t_steps = k_steps * T_sample
 
     ir = (r / np.sqrt(np.pi)) * np.exp(-np.square(r * t_steps))    
+
+    # Norming on Energy = 1
     ir /= np.linalg.norm(ir) * np.sqrt(T_sample)
 
     return T_sample, ir
@@ -122,7 +126,7 @@ def get_gaussian_ir(syms, energy_factor, f_symbol, n_up):
 
 # Pulse forming
 
-def generate_signal(modulation, data, pulse, syms):
+def generate_signal(modulation, T_sample, T_symbol, data, pulse, syms, P_in):
     """Generates send Signal
     
     This function calculates send signal with variable 
@@ -130,9 +134,12 @@ def generate_signal(modulation, data, pulse, syms):
     NOTE: If pulse doesn't meet the nyquist isi criterion set syms = 0.
 
     :param modulation: Dict mapping symbols to send-values. Ie {00: 1+1j, 01: 1-1j, 11: -1-1j, 10: -1+1j} 
+    :param T_sample: time-length of one sample of modulation
+    :param T_symbol: time-length of one symbol
     :param data: Data to send. Should be an array containing the symbols.
     :param pulse: Impulse response of pulse filter
     :param syms: "Normed" symbol length of pulse
+    :param P_in: power in dBm the signal should have
     
     :returns: array conatining send signal
 
@@ -143,6 +150,7 @@ def generate_signal(modulation, data, pulse, syms):
     assert syms >= 0 and isinstance(syms, int), "syms should be positive int or zero"
 
     send_symbols = [modulation[str(symbol)] for symbol in data]
+    n_symbol = len(send_symbols)
 
     if syms == 0:
         send_symbols_up = np.zeros(len(data) * pulse.size)
@@ -153,6 +161,13 @@ def generate_signal(modulation, data, pulse, syms):
         send_symbols_up[ : : n_up] = send_symbols
     
     send_signal = np.convolve(pulse, send_symbols_up)
+    
+    # Norming on Energy = n_symbol (Each modulated symbol contains Energy = 1)
+    send_signal /= np.linalg.norm(send_signal) * np.sqrt(T_sample) / np.sqrt(n_symbol)
+    P_signal_is = n_symbol / T_symbol
+    P_signal_should = np.power(10, (P_in-30)/10)
+    scaling_factor = P_signal_should / P_signal_is
+    send_signal *= np.sqrt(scaling_factor)
 
     return send_signal
 
@@ -230,5 +245,5 @@ def splitstepfourier(u0, dt, dz, nz, alpha, beta2, gamma, return_array=False):
     else:
         output = end
     
-    return output,linear_operator,nonlinear_operator(start)
+    return output
 
