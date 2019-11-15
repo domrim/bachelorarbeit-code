@@ -97,7 +97,7 @@ sbplt32.set_title('Modulation Gaus')
 
 # Transmission
 z_length = 70  # [km]
-nz = 1  # steps
+nz = 70  # steps
 dz = z_length / nz  # [km]
 
 alpha = 0.2  # Dämpfung [dB/km]
@@ -109,14 +109,14 @@ output = splitstepfourier(send_rc, t_sample_rc, dz, nz, alpha, beta2, gamma)
 
 fig4 = plt.figure(figsize=figure_size)
 sbplt41 = fig4.add_subplot(421)
-sbplt41.plot(np.square(abs(send_rc)), linewidth=2.0, label='Send')
+sbplt41.plot(np.arange(send_rc.size)*t_sample_rc, np.square(abs(send_rc)), linewidth=2.0, label='Send')
 
 sbplt41.grid(True)
 sbplt41.set_title('Time Domain')
 sbplt41.legend(loc='upper right')
 
 sbplt43 = fig4.add_subplot(423)
-sbplt43.plot(np.square(abs(output)), linewidth=2.0, label='Output', color='tab:orange')
+sbplt43.plot(np.arange(output.size)*t_sample_rc, np.square(abs(output)), linewidth=2.0, label='Output', color='tab:orange')
 
 sbplt43.grid(True)
 sbplt43.legend(loc='upper right')

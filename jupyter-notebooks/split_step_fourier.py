@@ -6,6 +6,13 @@ import numpy as np
 import scipy.special as special
 
 
+## Helper Functions
+
+def calc_rmse(comp_value, ref_value):
+    assert len(comp_value) == len(ref_value), "Inputs should have same dimension"
+    return np.sqrt(np.mean(np.square(comp_value - ref_value)))
+
+
 # Filter Definitions
 
 # taken from https://github.com/kit-cel/lecture-examples/blob/master/nt1/vorlesung/3_mod_demod/pulse_shaping.ipynb
