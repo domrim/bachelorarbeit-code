@@ -13,6 +13,13 @@ def calc_rmse(comp_value, ref_value):
     return np.sqrt(np.mean(np.square(comp_value - ref_value)))
 
 
+def calc_relerr(comp_value, ref_value):
+    assert len(comp_value) == len(ref_value), "Inputs should have same dimension"
+    zaehler = np.sum(np.square(np.abs(comp_value-ref_value)))
+    nenner = np.sum(np.square(np.abs(ref_value)))
+    return zaehler/nenner
+
+
 # Filter Definitions
 
 # taken from https://github.com/kit-cel/lecture-examples/blob/master/nt1/vorlesung/3_mod_demod/pulse_shaping.ipynb

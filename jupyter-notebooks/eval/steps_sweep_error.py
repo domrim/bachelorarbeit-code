@@ -2,6 +2,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+import tikzplotlib
 
 get_ipython().run_line_magic('run', "'./../split_step_fourier.ipynb'")
 
@@ -9,7 +10,7 @@ get_ipython().run_line_magic('run', "'./../split_step_fourier.ipynb'")
 get_ipython().run_line_magic('matplotlib', 'inline')
 # plotting options 
 font = {'size': 12}
-figure_size = (30, 20)
+figure_size = (25, 15)
 plt.rc('font', **font)
 plt.rc('text', usetex=True)
 
@@ -54,37 +55,49 @@ for power in np.arange(-5,10):
 
     d_nz = 1 # d_nz to use in loop
     ## Simulation of fibers with different step sizes
-    sim_steps = []
+    step_sweep_sim = []
     for nz in np.arange(1, nz_ref+d_nz, step=d_nz):
         dz = z_length / nz
         output = splitstepfourier(send_rc, t_sample_rc, dz, nz, alpha, beta2, gamma)
-        sim_steps.append((nz, output))
+        step_sweep_sim.append((nz, output))
     
-    sims[f"{power}"] = (output_ref, sim_steps)
+    sims[f"{power}"] = (output_ref, step_sweep_sim)
 
 
-## Evaluation
-axes = {}
-plots = {}
+## Plots
+fig1 = plt.figure(figsize=figure_size)
+plot1 = fig1.add_subplot()
+fig2 = plt.figure(figsize=figure_size)
+plot2 = fig2.add_subplot()
 for key, data in sims.items():
     ref = data[0]
     signal = data[1]
     x_vals = []
-    evals = []
+    y_vals = []
     for n_steps, sim_out in signal:
         x_vals.append(n_steps)
-        evals.append(abs(calc_rmse(sim_out, ref))) ## fix ref
-    axes[key] = x_vals
-    plots[key] = evals
+        y_vals.append(abs(calc_relerr(sim_out, ref)))
 
-    
-fig = plt.figure(figsize=figure_size)
-for key, val in plots.items():
-    plt.plot(np.asarray(axes[key]), val, label=key)
+    plot1.plot(x_vals, y_vals, label=key)
+    if key in ['-5', '0', '3', '5', '6', '7', '8', '9']:
+        plot2.plot(x_vals, y_vals, label=key)
 
-plt.legend(loc='upper right')
-plt.ylabel("RMSE")
-plt.xlabel("Steps simulated")
+xmin = np.amin(x_vals)
+xmax = np.amax(x_vals)
+
+plot1.legend(loc='upper right', title='$P_{in}$')
+plot1.set_xlim(xmin, 20)
+plot1.set_ylabel("Relative error")
+plot1.set_xlabel("Steps simulated")
+
+plot2.legend(loc='upper right', title='$P_{in}$')
+plot2.grid()
+plot2.set_xlim(xmin, 10)
+plot2.set_ylabel("Relative error")
+plot2.set_xlabel("Steps simulated")
+
+tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/steps_sweep_full.tex', figure=fig1)
+tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/steps_sweep_zoom.tex', figure=fig2)
 
 
 
