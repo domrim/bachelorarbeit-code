@@ -100,5 +100,62 @@ tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/steps_sweep
 tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/steps_sweep_zoom.tex', figure=fig2)
 
 
+# simulate channel for multiple power inputs without alpha
+sims2 ={}
+for power in np.arange(-5,10):
+    send_rc = generate_signal(modulation, t_sample_rc, 1/f_symbol, send_bits, rc, syms_per_filt, power)
 
+    ## Simulation of reference transmission (dz = 0.1 km)
+    nz_ref = 100  # steps
+    dz_ref = z_length / nz_ref  # [km]
+
+    output_ref = splitstepfourier(send_rc, t_sample_rc, dz_ref, nz_ref, 0, beta2, gamma)
+
+    d_nz = 1 # d_nz to use in loop
+    ## Simulation of fibers with different step sizes
+    step_sweep_sim = []
+    for nz in np.arange(1, nz_ref+d_nz, step=d_nz):
+        dz = z_length / nz
+        output = splitstepfourier(send_rc, t_sample_rc, dz, nz, 0, beta2, gamma)
+        step_sweep_sim.append((nz, output))
+    
+    sims2[f"{power}"] = (output_ref, step_sweep_sim)
+
+
+## Plots
+fig3 = plt.figure(figsize=figure_size)
+plot3 = fig3.add_subplot()
+fig4 = plt.figure(figsize=figure_size)
+plot4 = fig4.add_subplot()
+for key, data in sims2.items():
+    ref = data[0]
+    signal = data[1]
+    x_vals = []
+    y_vals = []
+    for n_steps, sim_out in signal:
+        x_vals.append(n_steps)
+        y_vals.append(abs(calc_relerr(sim_out, ref)))
+
+    plot3.plot(x_vals, y_vals, label=key)
+    if key in ['-5', '0', '3', '5', '6', '7', '8', '9']:
+        plot4.plot(x_vals, y_vals, label=key)
+
+xmin = np.amin(x_vals)
+xmax = np.amax(x_vals)
+
+plot3.legend(loc='upper right', title='$P_{in}$')
+plot3.set_title('Relative Error (alpha=0)')
+plot3.set_xlim(xmin, 20)
+plot3.set_ylabel("Relative error")
+plot3.set_xlabel("Steps simulated")
+
+plot4.legend(loc='upper right', title='$P_{in}$')
+plot4.set_title('Relative Error (alpha=0)')
+plot4.grid()
+plot4.set_xlim(xmin, 10)
+plot4.set_ylabel("Relative error")
+plot4.set_xlabel("Steps simulated")
+
+tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/steps_sweep_full_noalpha.tex', figure=fig3)
+tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/steps_sweep_zoom_noalpha.tex', figure=fig4)
 
