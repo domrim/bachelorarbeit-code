@@ -57,7 +57,7 @@ gamma = 1.3 # [1/W/km]
 output = splitstepfourier(send_new, t_sample_rc, dz, nz, alpha, beta2, gamma, True)
 
 
-fig, ax = plt.subplots(len(output), figsize=(15,30), sharex=True)
+fig1, ax1 = plt.subplots(len(output), figsize=(15,30), sharex=True)
 
 colors = cycle(list(mcolors.TABLEAU_COLORS))
 counter = 0
@@ -65,11 +65,11 @@ x_vals = np.arange(send_new.size)*t_sample_rc
 xmin = np.amin(x_vals)
 xmax = np.amax(x_vals)
 for key, val in output.items():
-    ax[counter].plot(x_vals, np.square(abs(val)), label=key, color=next(colors))
-    ax[counter].set_xlim(xmin, xmax)
-    ax[counter].set_ylim(bottom=0)
-    ax[counter].set_title(f"after {key} steps")
-    ax[counter].set_ylabel("$|s|^2$")
+    ax1[counter].plot(x_vals, np.square(abs(val)), label=key, color=next(colors))
+    ax1[counter].set_xlim(xmin, xmax)
+    ax1[counter].set_ylim(bottom=0)
+    ax1[counter].set_title(f"after {key} steps")
+    ax1[counter].set_ylabel("$|s|^2$")
     counter += 1
 
 
@@ -86,7 +86,7 @@ gamma = 1.3 # [1/W/km]
 output2 = splitstepfourier(send_new, t_sample_rc, dz, nz, alpha, beta2, gamma, True)
 
 
-fig, ax = plt.subplots(len(output), figsize=(15,30), sharex=True)
+fig2, ax2 = plt.subplots(len(output), figsize=(15,30), sharex=True)
 
 colors = cycle(list(mcolors.TABLEAU_COLORS))
 counter = 0
@@ -99,15 +99,16 @@ x_vals = np.arange(send_new.size)*t_sample_rc
 xmin = np.amin(x_vals)
 xmax = np.amax(x_vals)
 for key, val in output2.items():
-    ax[counter].plot(x_vals, np.square(abs(val)), label=key, color=next(colors))
-    ax[counter].set_xlim(xmin, xmax)
-    ax[counter].set_ylim(ymin, ymax)
-    ax[counter].set_title(f"after {key} steps")
-    ax[counter].set_ylabel("$|s|^2$")
+    ax2[counter].plot(x_vals, np.square(abs(val)), label=key, color=next(colors))
+    ax2[counter].set_xlim(xmin, xmax)
+    ax2[counter].set_ylim(ymin, ymax)
+    ax2[counter].set_title(f"after {key} steps")
+    ax2[counter].set_ylabel("$|s|^2$")
     counter += 1
     
-ax[counter-1].set_xlabel("t [s]")
+ax2[counter-1].set_xlabel("t [s]")
 
 
-
+tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/fiber_propagation.tex', figure=fig1)
+tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/fiber_propagation_noalpha.tex', figure=fig2)
 
