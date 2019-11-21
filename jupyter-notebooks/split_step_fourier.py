@@ -166,6 +166,8 @@ def amplifier(signal, power, T_sample, T_symbol):
     P_is = np.sum(np.square(signal))*T_sample/T_symbol
     P_should = np.power(10, (power-30)/10)
     output = signal * np.sqrt(P_should/P_is)
+    P_now = np.sum(np.square(output))*T_sample/T_symbol
+    assert math.isclose(P_should, P_now), f"Amplification has gone wrong, power should be {P_should}, but is {P_now}"
     return output
 
 
