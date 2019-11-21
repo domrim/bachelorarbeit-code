@@ -153,7 +153,7 @@ def amplifier(signal, power, T_sample, T_symbol):
     
     """
     P_is = np.sum(np.square(signal))*T_sample/T_symbol
-    P_should = np.power(10, (P_in-30)/10)
+    P_should = np.power(10, (power-30)/10)
     output = signal * np.sqrt(P_should/P_is)
     return output
 
@@ -203,7 +203,7 @@ def generate_signal(modulation, T_sample, T_symbol, data, pulse, syms, P_in):
 
 # SplitStep Fourier Function
 
-def splitstepfourier(u0, dt, dz, nz, alpha, beta2, gamma, return_array=False):
+def splitstepfourier(u0, dt, dz, nz, alpha, beta2, gamma, return_dict=False):
     """Split-step fourier method
     
     This function solves the nonlinear Schrodinger equation for pulse propagation in an optical fiber using the split-step Fourier method.
@@ -219,10 +219,10 @@ def splitstepfourier(u0, dt, dz, nz, alpha, beta2, gamma, return_array=False):
     :param alpha: power loss coeficient
     :param beta2: dispersion polynomial coefficient
     :param gamma: nonlinearity coefficient
-    :param return_array: Flag if only signal at end of phase or after every step should be returned
+    :param return_dict: Flag if only signal at end of phase or after every step should be returned
     
     :returns:
-        if return_array = True:
+        if return_dict = True:
             dict containing steps calculated up to this point as key and signal at this point as value from beginning till end of fiber
         else:
             signal at the end of the fiber
@@ -232,7 +232,7 @@ def splitstepfourier(u0, dt, dz, nz, alpha, beta2, gamma, return_array=False):
 
     nt = len(u0)
     dw = 2 * np.pi * np.fft.fftfreq(nt,dt)
-    if return_array:
+    if return_dict:
         output = {}
 
     # Linear operator (frequency domain)
@@ -249,7 +249,7 @@ def splitstepfourier(u0, dt, dz, nz, alpha, beta2, gamma, return_array=False):
     # First Nonlinear step
     temp = np.fft.ifft(f_temp)
     temp = temp * nonlinear_operator(temp)
-    if return_array:
+    if return_dict:
         output['0.5'] = temp
         
     
@@ -261,7 +261,7 @@ def splitstepfourier(u0, dt, dz, nz, alpha, beta2, gamma, return_array=False):
         # Nonlinear Step
         temp = np.fft.ifft(f_temp)
         temp = temp * nonlinear_operator(temp)
-        if return_array:
+        if return_dict:
             output[f'{0.5 + step}'] = temp
     
     # End (half linear step)
@@ -269,7 +269,7 @@ def splitstepfourier(u0, dt, dz, nz, alpha, beta2, gamma, return_array=False):
     f_end = f_temp * linear_operator_halfstep
     end = np.fft.ifft(f_end)
     
-    if return_array:
+    if return_dict:
         output[f'{nz}'] = end
     else:
         output = end
