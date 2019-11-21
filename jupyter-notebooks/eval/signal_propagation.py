@@ -41,9 +41,7 @@ send_bits = np.random.choice([symbol for symbol in modulation.keys()], size=n_sy
 send_rc = generate_signal(modulation, t_sample_rc, 1/f_symbol, send_bits, rc, syms_per_filt, power)
 
 # add zeros before and after signal (use samples per symbol as factor)
-n = 10
-zeros = np.zeros(n * int(1/f_symbol/t_sample_rc))
-send_new = np.concatenate((zeros, send_rc, zeros))
+send_new = zeroing(send_rc, 5)
 
 
 ## Transmission

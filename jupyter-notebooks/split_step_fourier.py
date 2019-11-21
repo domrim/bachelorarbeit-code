@@ -4,6 +4,7 @@
 
 import numpy as np
 import scipy.special as special
+import math
 
 
 ## Helper Functions
@@ -18,6 +19,16 @@ def calc_relerr(comp_value, ref_value):
     zaehler = np.sum(np.square(np.abs(comp_value-ref_value)))
     nenner = np.sum(np.square(np.abs(ref_value)))
     return zaehler/nenner
+
+
+def zeroing(signal, n):
+    # add zeros before and after signal (use samples per symbol as factor)
+    zeros = np.zeros(n * int(1/f_symbol/t_sample_rc))
+    padded_signal = np.concatenate((zeros, signal, zeros))
+    power_before = np.sum(np.square(signal))
+    power_after = np.sum(np.square(padded_signal))
+    assert math.isclose(power_before, power_after), f"Something has go wrong at zero adding ({power_before} != {power_after})"
+    return padded_signal
 
 
 # Filter Definitions
