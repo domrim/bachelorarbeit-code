@@ -139,6 +139,24 @@ def get_gaussian_ir(syms, energy_factor, f_symbol, n_up):
 
 
 # Pulse forming
+def amplifier(signal, power, T_sample, T_symbol):
+    """Amplifies signal
+    
+    This function amplifies signal to given power
+    
+    :param signal: Array containing signal values
+    :param power: Target power for amplification in dBm
+    :param T_sample: time-length of one sample
+    :param T_symbol: time-length of one symbol
+    
+    :returns: signal amplified to target power
+    
+    """
+    P_is = np.sum(np.square(signal))*T_sample/T_symbol
+    P_should = np.power(10, (P_in-30)/10)
+    output = signal * np.sqrt(P_should/P_is)
+    return output
+
 
 def generate_signal(modulation, T_sample, T_symbol, data, pulse, syms, P_in):
     """Generates send Signal
@@ -163,8 +181,7 @@ def generate_signal(modulation, T_sample, T_symbol, data, pulse, syms, P_in):
     assert isinstance(data, (list, np.ndarray)), "Send data should be a list or numpy array"
     assert syms >= 0 and isinstance(syms, int), "syms should be positive int or zero"
 
-    send_symbols = [modulation[str(symbol)] for symbol in data]
-    n_symbol = len(send_symbols)
+    send_symbols = [modulation[str(symbol)]for symbol in data]
 
     if syms == 0:
         send_symbols_up = np.zeros(len(data) * pulse.size)
@@ -178,10 +195,8 @@ def generate_signal(modulation, T_sample, T_symbol, data, pulse, syms, P_in):
     
     # Norming on Energy = n_symbol (Each modulated symbol contains Energy = 1)
     send_signal /= np.linalg.norm(send_signal) * np.sqrt(T_sample) / np.sqrt(n_symbol)
-    P_signal_is = n_symbol / T_symbol
-    P_signal_should = np.power(10, (P_in-30)/10)
-    scaling_factor = P_signal_should / P_signal_is
-    send_signal *= np.sqrt(scaling_factor)
+    # Amplification of signal to given power
+    send_signal = amplifier(send_signal, P_in, T_sample, T_symbol)
 
     return send_signal
 
