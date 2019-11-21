@@ -156,6 +156,7 @@ plot4.set_xlim(xmin, 10)
 plot4.set_ylabel("Relative error")
 plot4.set_xlabel("Steps simulated")
 
+
 tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/steps_sweep_full_noalpha.tex', figure=fig3)
 tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/steps_sweep_zoom_noalpha.tex', figure=fig4)
 
