@@ -22,8 +22,8 @@ def calc_relerr(comp_value, ref_value):
 
 
 def zeroing(signal, n):
-    # add zeros before and after signal (use samples per symbol as factor)
-    zeros = np.zeros(n * int(1/f_symbol/t_sample_rc))
+    # add zeros before and after signal
+    zeros = np.zeros(n)
     padded_signal = np.concatenate((zeros, signal, zeros))
     power_before = np.sum(np.square(signal))
     power_after = np.sum(np.square(padded_signal))
