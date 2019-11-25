@@ -241,7 +241,7 @@ def splitstepfourier(u0, dt, dz, nz, alpha, beta2, gamma, return_dict=False):
             signal at the end of the fiber
 
     """
-    assert isinstance(u0, np.ndarray), "Input signal should be a numpy array."
+    assert isinstance(u0, np.ndarray), f"Input signal should be a numpy array, but is {type(u0)}."
 
     nt = len(u0)
     dw = 2 * np.pi * np.fft.fftfreq(nt,dt)
