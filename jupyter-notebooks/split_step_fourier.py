@@ -31,6 +31,18 @@ def zeroing(signal, n):
     return padded_signal
 
 
+def watt2dbm(power_watt):
+    return 10*np.log10(power_watt)+30
+
+
+def dbm2watt(power_dbm):
+    return np.power(10, (power_dbm-30)/10)
+
+
+def calc_power(signal, T_sample, T_symbol):
+    return np.sum(signal * np.conj(signal))*T_sample/T_symbol
+
+
 # Filter Definitions
 
 # taken from https://github.com/kit-cel/lecture-examples/blob/master/nt1/vorlesung/3_mod_demod/pulse_shaping.ipynb
@@ -163,15 +175,19 @@ def amplifier(signal, power, T_sample, T_symbol):
     :returns: signal amplified to target power
     
     """
-    P_is = np.sum(np.square(signal))*T_sample/T_symbol
-    P_should = np.power(10, (power-30)/10)
+    P_is = calc_power(signal, T_sample, T_symbol)
+    P_should = dbm2watt(power)
     output = signal * np.sqrt(P_should/P_is)
-    P_now = np.sum(np.square(output))*T_sample/T_symbol
+    P_now = calc_power(output, T_sample, T_symbol)
+    if DEBUG:
+        print(f"Power before amplification: {np.real(P_is)} W ({watt2dbm(np.real(P_is))} dBm)")
+        print(f"Power target value: {P_should} W ({watt2dbm(P_should)} dBm)")
+        print(f"Power after amplification: {np.real(P_now)} W ({np.real(watt2dbm(P_now))} dBm)")
     assert math.isclose(P_should, P_now), f"Amplification has gone wrong, power should be {P_should}, but is {P_now}"
     return output
 
 
-def generate_signal(modulation, T_sample, T_symbol, data, pulse, syms, P_in):
+def generate_signal(modulation, T_sample, T_symbol, data, pulse, syms, P_in=None):
     """Generates send Signal
     
     This function calculates send signal with variable 
@@ -184,7 +200,7 @@ def generate_signal(modulation, T_sample, T_symbol, data, pulse, syms, P_in):
     :param data: Data to send. Should be an array containing the symbols.
     :param pulse: Impulse response of pulse filter
     :param syms: "Normed" symbol length of pulse
-    :param P_in: power in dBm the signal should have
+    :param P_in: power in dBm the signal should have, if not given, signal won't be amplified but still normed
     
     :returns: array conatining send signal
 
@@ -208,8 +224,10 @@ def generate_signal(modulation, T_sample, T_symbol, data, pulse, syms, P_in):
     
     # Norming on Energy = n_symbol (Each modulated symbol contains Energy = 1)
     send_signal /= np.linalg.norm(send_signal) * np.sqrt(T_sample) / np.sqrt(n_symbol)
+
     # Amplification of signal to given power
-    send_signal = amplifier(send_signal, P_in, T_sample, T_symbol)
+    if P_in is not None:
+        send_signal = amplifier(send_signal, P_in, T_sample, T_symbol)
 
     return send_signal
 
