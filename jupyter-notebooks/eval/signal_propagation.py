@@ -132,6 +132,3 @@ ax2[counter-1].set_xlabel("t [s]")
 tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/fiber_propagation.tex', figure=fig1)
 tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/fiber_propagation_noalpha.tex', figure=fig2)
 
-
-
-
