@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 
 get_ipython().run_line_magic('run', './split_step_fourier.ipynb')
 
+DEBUG = True
+
 # showing figures inline
 get_ipython().run_line_magic('matplotlib', 'inline')
 # plotting options 
@@ -105,7 +107,9 @@ D = 17  # [ps/nm/km]
 beta2 = - (D * np.square(1550e-9)) / (2 * np.pi * 3e8) * 1e-3 # [s^2/km] propagation constant, lambda=1550nm is standard single-mode wavelength
 gamma = 1.3 # [1/W/km]
 
-output = splitstepfourier(send_rc, t_sample_rc, dz, nz, alpha, beta2, gamma)
+send = zeroing(send_rc, 15 * int(1/f_symbol/t_sample_rc))
+
+output = splitstepfourier(send, t_sample_rc, dz, nz, alpha, beta2, gamma)
 
 fig4 = plt.figure(figsize=figure_size)
 sbplt41 = fig4.add_subplot(421)
