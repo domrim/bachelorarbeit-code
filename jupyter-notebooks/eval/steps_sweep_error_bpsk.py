@@ -23,7 +23,7 @@ r_rc = .33
 syms_per_filt = 4  # symbols per filter (plus minus in both directions)
 t_sample_rc, rc = get_rc_ir(syms_per_filt, r_rc, f_symbol, n_up)
 
-# modulation scheme and constellation points
+# modulation scheme and constellation points for bpsk
 M = 2
 modulation = {'0': -1, '1': 1}
 n_symbol = 30 # number of symbols
