@@ -25,8 +25,9 @@ syms_per_filt = 4  # symbols per filter (plus minus in both directions)
 t_sample_rc, rc = get_rc_ir(syms_per_filt, r_rc, f_symbol, n_up)
 
 # modulation scheme and constellation points for bpsk
-M = 2
-modulation = {'0': -1, '1': 1}
+M = 16
+qam = [ ((2*(m+1)-np.sqrt(M)-1) + 1j*(2*(n+1)-np.sqrt(M)-1)) for n in range(int(np.sqrt(M))) for m in range(int(np.sqrt(M))) ]
+modulation = {f"{i:04b}": symb for (i, symb) in zip(range(M), qam)}
 n_symbol = 30 # number of symbols
 
 
@@ -155,8 +156,8 @@ plot4.set_ylabel("Relative error")
 plot4.set_xlabel("Steps simulated")
 
 
-tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/steps_sweep_bpsk_full.tex', figure=fig1)
-tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/steps_sweep_bpsk_zoom.tex', figure=fig2)
-tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/steps_sweep_bpsk_full_noalpha.tex', figure=fig3)
-tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/steps_sweep_bpsk_zoom_noalpha.tex', figure=fig4)
+tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/steps_sweep_16qam_full.tex', figure=fig1)
+tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/steps_sweep_16qam_zoom.tex', figure=fig2)
+tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/steps_sweep_16qam_full_noalpha.tex', figure=fig3)
+tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/steps_sweep_16qam_zoom_noalpha.tex', figure=fig4)
 
