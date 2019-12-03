@@ -63,9 +63,9 @@ sbplt21.set_title('Impulse Responses')
 # modulation scheme and constellation points
 M = 2
 modulation = {'0': -1, '1': 1}
-n_symbol = 4 # number of symbols
+n_symbol = 10 # number of symbols
 
-P_in = 30  # Send Power in [dBm]
+P_in = 19  # Send Power in [dBm]
 
 # Signalfolge generieren
 send_bits = np.random.choice([symbol for symbol in modulation.keys()], size=n_symbol)
@@ -99,21 +99,21 @@ sbplt32.set_title('Modulation Gaus')
 
 # Transmission
 z_length = 70  # [km]
-nz = 70  # steps
+nz = 10  # steps
 dz = z_length / nz  # [km]
 
-alpha = 0.2  # Dämpfung [dB/km]
+alpha = 0.2 # Dämpfung [dB/km]
 D = 17  # [ps/nm/km]
 beta2 = - (D * np.square(1550e-9)) / (2 * np.pi * 3e8) * 1e-3 # [s^2/km] propagation constant, lambda=1550nm is standard single-mode wavelength
 gamma = 1.3 # [1/W/km]
 
-send = zeroing(send_rc, 15 * int(1/f_symbol/t_sample_rc))
+send = zeroing(send_rc, 50 * int(1/f_symbol/t_sample_rc))
 
-output = splitstepfourier(send, t_sample_rc, dz, nz, alpha, beta2, gamma)
+output = splitstepfourier(send, t_sample_rc, int(z_length/10), 10, alpha, beta2, gamma)
 
 fig4 = plt.figure(figsize=figure_size)
 sbplt41 = fig4.add_subplot(421)
-sbplt41.plot(np.arange(send_rc.size)*t_sample_rc, np.square(abs(send_rc)), linewidth=2.0, label='Send')
+sbplt41.plot(np.arange(send.size)*t_sample_rc, np.square(abs(send)), linewidth=2.0, label='Send')
 
 sbplt41.grid(True)
 sbplt41.set_title('Time Domain')
@@ -126,7 +126,7 @@ sbplt43.grid(True)
 sbplt43.legend(loc='upper right')
 
 sbplt42 = fig4.add_subplot(422)
-sbplt42.plot(np.fft.fftshift(np.square(abs(t_sample_gaussian*np.fft.fft(send_rrc)/np.sqrt(2*np.pi)))), linewidth=2.0, label='Input')
+sbplt42.plot(np.fft.fftshift(np.square(abs(t_sample_gaussian*np.fft.fft(send)/np.sqrt(2*np.pi)))), linewidth=2.0, label='Input')
 
 sbplt42.grid(True)
 sbplt42.set_title('Frequency Domain')

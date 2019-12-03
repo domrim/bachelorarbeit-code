@@ -27,7 +27,7 @@ def zeroing(signal, n):
     padded_signal = np.concatenate((zeros, signal, zeros))
     power_before = np.sum(np.square(signal))
     power_after = np.sum(np.square(padded_signal))
-    assert math.isclose(power_before, power_after), f"Something has go wrong at zero adding ({power_before} != {power_after})"
+    assert np.isclose(power_before, power_after), f"Something has go wrong at zero adding ({power_before} != {power_after})"
     return padded_signal
 
 
@@ -183,7 +183,7 @@ def amplifier(signal, power, T_sample, T_symbol):
         print(f"Power before amplification: {np.real(P_is)} W ({watt2dbm(np.real(P_is))} dBm)")
         print(f"Power target value: {P_should} W ({watt2dbm(P_should)} dBm)")
         print(f"Power after amplification: {np.real(P_now)} W ({np.real(watt2dbm(P_now))} dBm)")
-    assert math.isclose(P_should, P_now), f"Amplification has gone wrong, power should be {P_should}, but is {P_now}"
+    assert np.isclose(P_should, P_now), f"Amplification has gone wrong, power should be {P_should}, but is {P_now}"
     return output
 
 
@@ -213,11 +213,11 @@ def generate_signal(modulation, T_sample, T_symbol, data, pulse, syms, P_in=None
     send_symbols = [modulation[str(symbol)]for symbol in data]
 
     if syms == 0:
-        send_symbols_up = np.zeros(len(data) * pulse.size)
+        send_symbols_up = np.zeros(len(data) * pulse.size, dtype=complex)
         send_symbols_up[ : : pulse.size] = send_symbols
     else:
         n_up = int((pulse.size - 1) / (2 * syms))
-        send_symbols_up = np.zeros(len(data) * n_up)
+        send_symbols_up = np.zeros(len(data) * n_up, dtype=complex)
         send_symbols_up[ : : n_up] = send_symbols
     
     send_signal = np.convolve(pulse, send_symbols_up)
