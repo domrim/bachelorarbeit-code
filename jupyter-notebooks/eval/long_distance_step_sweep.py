@@ -122,5 +122,5 @@ ax2.set_xlim(np.amin(x_vals), np.amax(x_vals))
 
 
 tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/long_distance_step_sweep_outputs.tex', figure=fig1)
-tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/long_distance_step_sweep_error.tex', figure=fig1)
+tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/long_distance_step_sweep_error.tex', figure=fig2)
 
