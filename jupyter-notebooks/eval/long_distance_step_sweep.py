@@ -11,10 +11,12 @@ DEBUG_PLOT = False
 # showing figures inline
 get_ipython().run_line_magic('matplotlib', 'inline')
 # plotting options 
-font = {'size': 12}
 figure_size = (25, 15)
-plt.rc('font', **font)
-plt.rc('text', usetex=True)
+plt.rcParams.update({
+    'font.family': 'serif',
+    'text.usetex': True,
+    'pgf.rcfonts': False,
+})
 
 
 # parameters
@@ -48,9 +50,9 @@ send = zeroing(send_ir, 200 * int(1/f_symbol/t_sample))
 full_distance = 770
 
 z_length = 70  # [km]
-nz_max = 15  # steps
+nz_max = 10  # steps
 
-alpha = 0.2  # Dämpfung [dB/km]
+alpha = 0  # Dämpfung [dB/km]
 D = 17  # [ps/nm/km]
 beta2 = - (D * np.square(1550e-9)) / (2 * np.pi * 3e8) * 1e-3 # [s^2/km] propagation constant, lambda=1550nm is standard single-mode wavelength
 gamma = 1.3 # [1/W/km]
@@ -121,6 +123,6 @@ ax2.plot(x_vals, errors)
 ax2.set_xlim(np.amin(x_vals), np.amax(x_vals))
 
 
-tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/long_distance_step_sweep_outputs.tex', figure=fig1)
-tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/long_distance_step_sweep_error.tex', figure=fig2)
+tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/long_distance_step_sweep_outputs.tex', figure=fig1, figureheight="\\figheight", figurewidth="\\figwidth")
+tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/long_distance_step_sweep_error.tex', figure=fig2, figureheight="\\figheight", figurewidth="\\figwidth")
 

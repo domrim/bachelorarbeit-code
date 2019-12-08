@@ -10,10 +10,12 @@ DEBUG = False
 # showing figures inline
 get_ipython().run_line_magic('matplotlib', 'inline')
 # plotting options 
-font = {'size': 12}
 figure_size = (25, 15)
-plt.rc('font', **font)
-plt.rc('text', usetex=True)
+plt.rcParams.update({
+    'font.family': 'serif',
+    'text.usetex': True,
+    'pgf.rcfonts': False,
+})
 
 
 # parameters of the filters
@@ -156,8 +158,8 @@ plot4.set_ylabel("Relative error")
 plot4.set_xlabel("Steps simulated")
 
 
-tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/steps_sweep_16qam_full.tex', figure=fig1)
-tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/steps_sweep_16qam_zoom.tex', figure=fig2)
-tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/steps_sweep_16qam_full_noalpha.tex', figure=fig3)
-tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/steps_sweep_16qam_zoom_noalpha.tex', figure=fig4)
+tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/steps_sweep_16qam_full.tex', figure=fig1, figureheight="\\figheight", figurewidth="\\figwidth")
+tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/steps_sweep_16qam_zoom.tex', figure=fig2, figureheight="\\figheight", figurewidth="\\figwidth")
+tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/steps_sweep_16qam_full_noalpha.tex', figure=fig3, figureheight="\\figheight", figurewidth="\\figwidth")
+tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/steps_sweep_16qam_zoom_noalpha.tex', figure=fig4, figureheight="\\figheight", figurewidth="\\figwidth")
 

@@ -10,10 +10,12 @@ DEBUG = False
 # showing figures inline
 get_ipython().run_line_magic('matplotlib', 'inline')
 # plotting options 
-font = {'size': 12}
 figure_size = (25, 15)
-plt.rc('font', **font)
-plt.rc('text', usetex=True)
+plt.rcParams.update({
+    'font.family': 'serif',
+    'text.usetex': True,
+    'pgf.rcfonts': False,
+})
 
 
 # parameters of the filters
@@ -86,12 +88,12 @@ for key, data in sims.items():
 xmin = np.amin(x_vals)
 xmax = np.amax(x_vals)
 
-plot1.legend(loc='upper right', title='$P_{in}$')
+plot1.legend(loc='upper right', title='$P_{in}$', ncol=2)
 plot1.set_xlim(xmin, 20)
 plot1.set_ylabel("Relative error")
 plot1.set_xlabel("Steps simulated")
 
-plot2.legend(loc='upper right', title='$P_{in}$')
+plot2.legend(loc='upper right', title='$P_{in}$', ncol=2)
 plot2.grid()
 plot2.set_xlim(xmin, 10)
 plot2.set_ylabel("Relative error")
@@ -141,13 +143,13 @@ for key, data in sims2.items():
 xmin = np.amin(x_vals)
 xmax = np.amax(x_vals)
 
-plot3.legend(loc='upper right', title='$P_{in}$')
+plot3.legend(loc='upper right', title='$P_{in}$', ncol=2)
 plot3.set_title('Relative Error (alpha=0)')
 plot3.set_xlim(xmin, 20)
 plot3.set_ylabel("Relative error")
 plot3.set_xlabel("Steps simulated")
 
-plot4.legend(loc='upper right', title='$P_{in}$')
+plot4.legend(loc='upper right', title='$P_{in}$', ncol=2)
 plot4.set_title('Relative Error (alpha=0)')
 plot4.grid()
 plot4.set_xlim(xmin, 10)
@@ -155,8 +157,8 @@ plot4.set_ylabel("Relative error")
 plot4.set_xlabel("Steps simulated")
 
 
-tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/steps_sweep_bpsk_full.tex', figure=fig1)
-tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/steps_sweep_bpsk_zoom.tex', figure=fig2)
-tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/steps_sweep_bpsk_full_noalpha.tex', figure=fig3)
-tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/steps_sweep_bpsk_zoom_noalpha.tex', figure=fig4)
+tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/steps_sweep_bpsk_full.tex', figure=fig1, figureheight="\\figheight", figurewidth="\\figwidth")
+tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/steps_sweep_bpsk_zoom.tex', figure=fig2, figureheight="\\figheight", figurewidth="\\figwidth")
+tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/steps_sweep_bpsk_full_noalpha.tex', figure=fig3, figureheight="\\figheight", figurewidth="\\figwidth")
+tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/steps_sweep_bpsk_zoom_noalpha.tex', figure=fig4, figureheight="\\figheight", figurewidth="\\figwidth")
 

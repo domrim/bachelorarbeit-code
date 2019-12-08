@@ -7,14 +7,17 @@ from itertools import cycle
 import tikzplotlib
 
 get_ipython().run_line_magic('run', "'./../split_step_fourier.ipynb'")
+DEBUG = False
 
 # showing figures inline
 get_ipython().run_line_magic('matplotlib', 'inline')
 # plotting options 
-font = {'size': 12}
 figure_size = (25, 15)
-plt.rc('font', **font)
-plt.rc('text', usetex=True)
+plt.rcParams.update({
+    'font.family': 'serif',
+    'text.usetex': True,
+    'pgf.rcfonts': False,
+})
 
 
 # parameters
@@ -129,6 +132,6 @@ ax2[counter-1].set_title(f"Output ({z_length} km)")
 ax2[counter-1].set_xlabel("t [s]")
 
 
-tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/fiber_propagation.tex', figure=fig1)
-tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/fiber_propagation_noalpha.tex', figure=fig2)
+tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/fiber_propagation.tex', figure=fig1, figureheight="\\figheight", figurewidth="\\figwidth")
+tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/fiber_propagation_noalpha.tex', figure=fig2, figureheight="\\figheight", figurewidth="\\figwidth")
 
