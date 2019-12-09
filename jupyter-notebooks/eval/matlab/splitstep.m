@@ -18,6 +18,6 @@ u0 = u0';
 w = wspace(T,nt);            % angular frequency vector
 vs = fftshift(w/(2*pi));     % frequency (shifted for plotting)
 
-u = ssprop(u0,dt,dz,nz,alpha,betap,gamma);   % propagate signal
+u = ssprop(u0,dt,dz,nz,alpha,betap,gamma, 1, inf);   % propagate signal
 
 save("output.mat", "u");
