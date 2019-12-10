@@ -10,10 +10,12 @@ DEBUG = True
 # showing figures inline
 get_ipython().run_line_magic('matplotlib', 'inline')
 # plotting options 
-font = {'size': 12}
-figure_size = (30, 20)
-plt.rc('font', **font)
-plt.rc('text', usetex=True)
+figure_size = (16, 9)
+plt.rcParams.update({
+    'font.family': 'serif',
+    'text.usetex': True,
+    'pgf.rcfonts': False,
+})
 
 
 # parameters of the filters
@@ -74,27 +76,30 @@ send_rc = generate_signal(modulation, t_sample_rc, 1/f_symbol, send_bits, rc, sy
 send_rrc = generate_signal(modulation, t_sample_rrc, 1/f_symbol, send_bits, rrc, syms_per_filt, P_in)
 send_gaussian = generate_signal(modulation, t_sample_gaussian, 1/f_symbol, send_bits, gaussian, 0, P_in)
 
-fig3 = plt.figure(figsize=figure_size)
-sbplt31 = fig3.add_subplot(121)
-sbplt31.plot(np.arange(send_rc.size)*t_sample_rc, send_rc, linewidth=2.0, label='Send RC')
-sbplt31.plot(np.arange(send_rrc.size)*t_sample_rrc, send_rrc, linewidth=2.0, label='Send RRC')
-#sbplt31.stem(np.arange(len(send_bits)/f_symbol, step=1/f_symbol), [ modulation[str(symbol)] for symbol in send_bits ], label='Send symbols', use_line_collection=True, basefmt=' ')
+fig3, ax3 = plt.subplots(1,2, figsize=figure_size)
 
-sbplt31.grid( True )
-sbplt31.legend(loc='upper right')
-sbplt31.set_ylabel('$P[W]$')
-sbplt31.set_xlabel('$t[s]$')
-sbplt31.set_title('Modulation RC/RRC')
+ax3[0].plot(np.arange(send_rc.size)*t_sample_rc, send_rc, linewidth=2.0, label='Send RC')
+ax3[0].plot(np.arange(send_rrc.size)*t_sample_rrc, send_rrc, linewidth=2.0, label='Send RRC')
+ax31 = ax3[0].twinx()
+ax31.stem(np.arange(len(send_bits)/f_symbol, step=1/f_symbol), [ modulation[str(symbol)] for symbol in send_bits ], label='Send symbols', use_line_collection=True, basefmt=' ', linefmt='C2', markerfmt='C2o')
 
-sbplt32 = fig3.add_subplot(122)
-sbplt32.plot(np.arange(send_gaussian.size)*t_sample_gaussian, send_gaussian, linewidth=2.0, label='Send Gaussian')
-#sbplt32.stem(np.arange(2*syms_per_filt*n_symbol/f_symbol, step=2*syms_per_filt/f_symbol), [ modulation[str(symbol)] for symbol in send_bits ], label='Send symbols', use_line_collection=True, basefmt=' ')
+ax3[0].grid( True )
+ax3[0].legend(loc='upper right')
+ax3[0].set_ylabel('$S$')
+ax3[0].set_xlabel('$t[s]$')
+ax3[0].set_title('Modulation RC/RRC')
+max_value = np.amax(np.abs(np.concatenate((send_rc, send_rrc))))
+ax3[0].set_ylim(-1.1*max_value, 1.1*max_value)
 
-sbplt32.grid( True )
-sbplt32.legend(loc='upper right')
-sbplt32.set_ylabel('$P[W]$')
-sbplt32.set_xlabel('$t[s]$')
-sbplt32.set_title('Modulation Gaus')
+ax3[1].plot(np.arange(send_gaussian.size)*t_sample_gaussian, send_gaussian, linewidth=2.0, label='Send Gaussian')
+ax32 = ax3[1].twinx()
+ax32.stem(np.arange(2*syms_per_filt*n_symbol/f_symbol, step=2*syms_per_filt/f_symbol), [ modulation[str(symbol)] for symbol in send_bits ], label='Send symbols', use_line_collection=True, basefmt=' ', linefmt='C1', markerfmt='C1o')
+
+ax3[1].grid( True )
+ax3[1].legend(loc='upper right')
+ax3[1].set_ylabel('$S$')
+ax3[1].set_xlabel('$t[s]$')
+ax3[1].set_title('Modulation Gaus')
 
 
 # Transmission
@@ -103,38 +108,33 @@ nz = 10  # steps
 dz = z_length / nz  # [km]
 
 alpha = 0.2 # Dämpfung [dB/km]
+alpha_neu = alpha/4.343
+print(alpha_neu)
 D = 17  # [ps/nm/km]
 beta2 = - (D * np.square(1550e-9)) / (2 * np.pi * 3e8) * 1e-3 # [s^2/km] propagation constant, lambda=1550nm is standard single-mode wavelength
 gamma = 1.3 # [1/W/km]
 
-send = zeroing(send_rc, 50 * int(1/f_symbol/t_sample_rc))
+send = zeroing(send_rc, 5 * int(1/f_symbol/t_sample_rc))
 
-output = splitstepfourier(send, t_sample_rc, int(z_length/10), 10, alpha, beta2, gamma)
+output = splitstepfourier(send, t_sample_rc, int(z_length/10), 10, alpha_neu, beta2, gamma)
 
-fig4 = plt.figure(figsize=figure_size)
-sbplt41 = fig4.add_subplot(421)
-sbplt41.plot(np.arange(send.size)*t_sample_rc, np.square(abs(send)), linewidth=2.0, label='Send')
+fig4, ax4 = plt.subplots(2,2, figsize=figure_size)
 
-sbplt41.grid(True)
-sbplt41.set_title('Time Domain')
-sbplt41.legend(loc='upper right')
+ax4[0][0].plot(np.arange(send.size)*t_sample_rc, np.square(abs(send)), linewidth=2.0, label='Send')
+ax4[0][0].grid(True)
+ax4[0][0].set_title('Time Domain')
+ax4[0][0].legend(loc='upper right')
 
-sbplt43 = fig4.add_subplot(423)
-sbplt43.plot(np.arange(output.size)*t_sample_rc, np.square(abs(output)), linewidth=2.0, label='Output', color='tab:orange')
+ax4[1][0].plot(np.arange(output.size)*t_sample_rc, np.square(abs(output)), linewidth=2.0, label='Output', color='tab:orange')
+ax4[1][0].grid(True)
+ax4[1][0].legend(loc='upper right')
 
-sbplt43.grid(True)
-sbplt43.legend(loc='upper right')
+ax4[0][1].plot(np.fft.fftshift(np.square(abs(t_sample_gaussian*np.fft.fft(send)/np.sqrt(2*np.pi)))), linewidth=2.0, label='Input')
+ax4[0][1].grid(True)
+ax4[0][1].set_title('Frequency Domain')
+ax4[0][1].legend(loc='upper right')
 
-sbplt42 = fig4.add_subplot(422)
-sbplt42.plot(np.fft.fftshift(np.square(abs(t_sample_gaussian*np.fft.fft(send)/np.sqrt(2*np.pi)))), linewidth=2.0, label='Input')
-
-sbplt42.grid(True)
-sbplt42.set_title('Frequency Domain')
-sbplt42.legend(loc='upper right')
-
-sbplt44 = fig4.add_subplot(424)
-sbplt44.plot(np.fft.fftshift(np.square(abs(t_sample_gaussian*np.fft.fft(output)/np.sqrt(2*np.pi)))), linewidth=2.0, label='Output', color='tab:orange')
-
-sbplt44.grid(True)
-sbplt44.legend(loc='upper right')
+ax4[1][1].plot(np.fft.fftshift(np.square(abs(t_sample_gaussian*np.fft.fft(output)/np.sqrt(2*np.pi)))), linewidth=2.0, label='Output', color='tab:orange')
+ax4[1][1].grid(True)
+ax4[1][1].legend(loc='upper right')
 
