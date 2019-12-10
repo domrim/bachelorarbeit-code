@@ -14,7 +14,7 @@ DEBUG_PLOT = False
 # showing figures inline
 get_ipython().run_line_magic('matplotlib', 'inline')
 # plotting options 
-figure_size = (20, 15)
+figure_size = (16, 9)
 plt.rcParams.update({
     'font.family': 'serif',
     'text.usetex': True,
@@ -74,16 +74,21 @@ output_matlab = matlab['u'].flatten()
 
 fig1, ax1 = plt.subplots(2, figsize=figure_size)
 
-ax1[0].plot(np.arange(output.size)*t_sample, np.square(np.abs(output)), linestyle='--', linewidth=2.0, label='Python')
+ax1[0].plot(np.arange(output.size)*t_sample, np.square(np.abs(output)), linewidth=2.0, label='Python')
 ax1[0].plot(np.arange(output_matlab.size)*t_sample, np.square(np.abs(output_matlab)), linestyle=':', linewidth=2.0, label='Matlab')
 ax1[0].legend()
 
-ax1[1].plot(np.fft.fftshift(np.square(abs(t_sample*np.fft.fft(output)/np.sqrt(2*np.pi)))), linestyle='--',linewidth=2.0,  label='Python')
+ax1[1].plot(np.fft.fftshift(np.square(abs(t_sample*np.fft.fft(output)/np.sqrt(2*np.pi)))), linewidth=2.0,  label='Python')
 ax1[1].plot(np.fft.fftshift(np.square(abs(t_sample*np.fft.fft(output_matlab)/np.sqrt(2*np.pi)))), linestyle=':', linewidth=2.0, label='Matlab')
 ax1[1].legend()
 
 print(f"Relativer Fehler: {calc_relerr(output, output_matlab)}")
 
 
-tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/compare_matlab.tex', figure=fig1, figureheight="\\figheight", figurewidth="\\figwidth")
+output_fname = "compare_matlab"
+output_path = "../../../bachelorarbeit-ausarbeitung/figures/plots/"
+
+tikzplotlib.save(f'{output_path}{output_fname}.tex', figure=fig1, figureheight="\\figheight", figurewidth="\\figwidth")
+
+fig1.savefig(f"{output_path}{output_fname}.pdf", bbox_inches='tight')
 

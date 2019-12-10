@@ -12,7 +12,7 @@ DEBUG = False
 # showing figures inline
 get_ipython().run_line_magic('matplotlib', 'inline')
 # plotting options 
-figure_size = (25, 15)
+figure_size = (10, 10*np.sqrt(2))
 plt.rcParams.update({
     'font.family': 'serif',
     'text.usetex': True,
@@ -63,11 +63,11 @@ output = splitstepfourier(send_new, t_sample_rc, dz, nz, alpha, beta2, gamma, Tr
 fig1, ax1 = plt.subplots(len(output)+1, figsize=(15,30), sharex=True)
 
 colors = cycle(list(mcolors.TABLEAU_COLORS))
+counter = 0
 
 x_vals = np.arange(send_new.size)*t_sample_rc
 xmin = np.amin(x_vals)
 xmax = np.amax(x_vals)
-counter = 0
 
 ax1[counter].plot(x_vals, np.square(np.abs(send_new)), label='0', color=next(colors))
 ax1[counter].set_xlim(xmin, xmax)
@@ -115,7 +115,7 @@ xmax = np.amax(x_vals)
 
 ax2[counter].plot(x_vals, np.square(np.abs(send_new)), label='0', color=next(colors))
 ax2[counter].set_xlim(xmin, xmax)
-ax2[counter].set_ylim(bottom=0)
+ax2[counter].set_ylim(ymin, ymax)
 ax2[counter].set_title(f"Input")
 ax2[counter].set_ylabel("$|s|^2$")
 counter += 1
@@ -132,6 +132,12 @@ ax2[counter-1].set_title(f"Output ({z_length} km)")
 ax2[counter-1].set_xlabel("t [s]")
 
 
-tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/fiber_propagation.tex', figure=fig1, figureheight="\\figheight", figurewidth="\\figwidth")
-tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/fiber_propagation_noalpha.tex', figure=fig2, figureheight="\\figheight", figurewidth="\\figwidth")
+output_fname = "fiber_propagation"
+output_path = "../../../bachelorarbeit-ausarbeitung/figures/plots/"
+
+tikzplotlib.save(f'{output_path}{output_fname}.tex', figure=fig1, figureheight="\\figheight", figurewidth="\\figwidth")
+tikzplotlib.save(f'{output_path}{output_fname}_noalpha.tex', figure=fig2, figureheight="\\figheight", figurewidth="\\figwidth")
+
+fig1.savefig(f"{output_path}{output_fname}.pdf", bbox_inches='tight')
+fig2.savefig(f"{output_path}{output_fname}_noalpha.pdf", bbox_inches='tight')
 

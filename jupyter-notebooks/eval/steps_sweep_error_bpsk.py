@@ -10,7 +10,7 @@ DEBUG = False
 # showing figures inline
 get_ipython().run_line_magic('matplotlib', 'inline')
 # plotting options 
-figure_size = (25, 15)
+figure_size = (16, 9)
 plt.rcParams.update({
     'font.family': 'serif',
     'text.usetex': True,
@@ -90,14 +90,14 @@ xmax = np.amax(x_vals)
 
 plot1.legend(loc='upper right', title='$P_{in}$', ncol=2)
 plot1.set_xlim(xmin, 20)
-plot1.set_ylabel("Relative error")
-plot1.set_xlabel("Steps simulated")
+plot1.set_ylabel("Relativer Fehler")
+plot1.set_xlabel("Anzahl simulierter Schritte (nz)")
 
 plot2.legend(loc='upper right', title='$P_{in}$', ncol=2)
 plot2.grid()
 plot2.set_xlim(xmin, 10)
-plot2.set_ylabel("Relative error")
-plot2.set_xlabel("Steps simulated")
+plot2.set_ylabel("Relativer Fehler")
+plot2.set_xlabel("Anzahl simulierter Schritte (nz)")
 
 
 # simulate channel for multiple power inputs without alpha
@@ -144,21 +144,27 @@ xmin = np.amin(x_vals)
 xmax = np.amax(x_vals)
 
 plot3.legend(loc='upper right', title='$P_{in}$', ncol=2)
-plot3.set_title('Relative Error (alpha=0)')
 plot3.set_xlim(xmin, 20)
-plot3.set_ylabel("Relative error")
-plot3.set_xlabel("Steps simulated")
+plot3.set_ylabel("Relativer Fehler")
+plot3.set_xlabel("Anzahl simulierter Schritte (nz)")
 
 plot4.legend(loc='upper right', title='$P_{in}$', ncol=2)
-plot4.set_title('Relative Error (alpha=0)')
 plot4.grid()
 plot4.set_xlim(xmin, 10)
-plot4.set_ylabel("Relative error")
-plot4.set_xlabel("Steps simulated")
+plot4.set_ylabel("Relativer Fehler")
+plot4.set_xlabel("Anzahl simulierter Schritte (nz)")
 
 
-tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/steps_sweep_bpsk_full.tex', figure=fig1, figureheight="\\figheight", figurewidth="\\figwidth")
-tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/steps_sweep_bpsk_zoom.tex', figure=fig2, figureheight="\\figheight", figurewidth="\\figwidth")
-tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/steps_sweep_bpsk_full_noalpha.tex', figure=fig3, figureheight="\\figheight", figurewidth="\\figwidth")
-tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/steps_sweep_bpsk_zoom_noalpha.tex', figure=fig4, figureheight="\\figheight", figurewidth="\\figwidth")
+output_fname = "steps_sweep_bpsk"
+output_path = "../../../bachelorarbeit-ausarbeitung/figures/plots/"
+
+tikzplotlib.save(f'{output_path}{output_fname}_full.tex', figure=fig1, figureheight="\\figheight", figurewidth="\\figwidth")
+tikzplotlib.save(f'{output_path}{output_fname}_zoom.tex', figure=fig2, figureheight="\\figheight", figurewidth="\\figwidth")
+tikzplotlib.save(f'{output_path}{output_fname}_full_noalpha.tex', figure=fig3, figureheight="\\figheight", figurewidth="\\figwidth")
+tikzplotlib.save(f'{output_path}{output_fname}_zoom_noalpha.tex', figure=fig4, figureheight="\\figheight", figurewidth="\\figwidth")
+
+fig1.savefig(f"{output_path}{output_fname}_full.pdf", bbox_inches='tight')
+fig2.savefig(f"{output_path}{output_fname}_zoom.pdf", bbox_inches='tight')
+fig3.savefig(f"{output_path}{output_fname}_full_noalpha.pdf", bbox_inches='tight')
+fig4.savefig(f"{output_path}{output_fname}_zoom_noalpha.pdf", bbox_inches='tight')
 

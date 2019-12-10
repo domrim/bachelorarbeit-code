@@ -11,7 +11,7 @@ DEBUG_PLOT = True
 # showing figures inline
 get_ipython().run_line_magic('matplotlib', 'inline')
 # plotting options 
-figure_size = (25, 15)
+figure_size = (16, 9)
 plt.rcParams.update({
     'font.family': 'serif',
     'text.usetex': True,
@@ -74,8 +74,10 @@ for key, item in outputs.items():
     if key in ['1', '2', '3', '4', '8', '16']:
         x_vals = np.arange(item.size)*sampletimes[key]
         ax1.plot(x_vals, np.square(np.abs(item)), label=key)
+        ax1.set_xlim(np.amin(x_vals), np.amax(x_vals))
     
 ax1.legend()
+ax1.set_xlabel("$t[s]$")
 
 
 fig2, ax2 = plt.subplots(1, figsize=figure_size)
@@ -89,6 +91,12 @@ ax2.legend()
 ax2.set_xlim(0.5e-9, 0.75e-9)
 
 
-tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/oversampling_full.tex', figure=fig1, figureheight="\\figheight", figurewidth="\\figwidth")
-tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/oversampling_zoom.tex', figure=fig2, figureheight="\\figheight", figurewidth="\\figwidth")
+output_fname = "oversampling"
+output_path = "../../../bachelorarbeit-ausarbeitung/figures/plots/"
+
+tikzplotlib.save(f'{output_path}{output_fname}_full.tex', figure=fig1, figureheight="\\figheight", figurewidth="\\figwidth")
+tikzplotlib.save(f'{output_path}{output_fname}_zoom.tex', figure=fig2, figureheight="\\figheight", figurewidth="\\figwidth")
+
+fig1.savefig(f"{output_path}{output_fname}_full.pdf", bbox_inches='tight')
+fig2.savefig(f"{output_path}{output_fname}_zoom.pdf", bbox_inches='tight')
 

@@ -11,7 +11,7 @@ DEBUG_PLOT = False
 # showing figures inline
 get_ipython().run_line_magic('matplotlib', 'inline')
 # plotting options 
-figure_size = (25, 15)
+figure_size = (16, 9)
 plt.rcParams.update({
     'font.family': 'serif',
     'text.usetex': True,
@@ -122,7 +122,14 @@ fig1, ax1 = plt.subplots(1, figsize=figure_size)
 ax1.plot(xvals_full_distance, power_full_distance)
 ax1.set_xlim(np.amin(xvals_full_distance), np.amax(xvals_full_distance))
 ax1.set_ylim(bottom=0)
+ax1.set_ylabel('$P[W]$')
+ax1.set_xlabel('$z[km]$')
 
 
-tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/long_distance_power_level.tex', figure=fig1, figureheight="\\figheight", figurewidth="\\figwidth")
+output_fname = "long_distance_power_level"
+output_path = "../../../bachelorarbeit-ausarbeitung/figures/plots/"
+
+tikzplotlib.save(f'{output_path}{output_fname}.tex', figure=fig1, figureheight="\\figheight", figurewidth="\\figwidth")
+
+fig1.savefig(f"{output_path}{output_fname}.pdf", bbox_inches='tight')
 

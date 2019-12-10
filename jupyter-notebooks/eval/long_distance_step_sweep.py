@@ -11,7 +11,7 @@ DEBUG_PLOT = False
 # showing figures inline
 get_ipython().run_line_magic('matplotlib', 'inline')
 # plotting options 
-figure_size = (25, 15)
+figure_size = (16, 9)
 plt.rcParams.update({
     'font.family': 'serif',
     'text.usetex': True,
@@ -123,6 +123,12 @@ ax2.plot(x_vals, errors)
 ax2.set_xlim(np.amin(x_vals), np.amax(x_vals))
 
 
-tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/long_distance_step_sweep_outputs.tex', figure=fig1, figureheight="\\figheight", figurewidth="\\figwidth")
-tikzplotlib.save('../../../bachelorarbeit-ausarbeitung/figures/plots/long_distance_step_sweep_error.tex', figure=fig2, figureheight="\\figheight", figurewidth="\\figwidth")
+output_fname = "long_distance_step_sweep"
+output_path = "../../../bachelorarbeit-ausarbeitung/figures/plots/"
+
+tikzplotlib.save(f'{output_path}{output_fname}_outputs.tex', figure=fig1, figureheight="\\figheight", figurewidth="\\figwidth")
+tikzplotlib.save(f'{output_path}{output_fname}_error.tex', figure=fig2, figureheight="\\figheight", figurewidth="\\figwidth")
+
+fig1.savefig(f"{output_path}{output_fname}_outputs.pdf", bbox_inches='tight')
+fig2.savefig(f"{output_path}{output_fname}_error.pdf", bbox_inches='tight')
 
