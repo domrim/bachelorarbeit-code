@@ -234,20 +234,18 @@ def generate_signal(modulation, T_sample, T_symbol, data, pulse, syms, P_in=None
 
 # SplitStep Fourier Function
 
-def splitstepfourier(u0, dt, dz, nz, alpha, beta2, gamma, return_dict=False):
+def splitstepfourier(u0, dt, dz, nz, alphadb, beta2, gamma, return_dict=False):
     """Split-step fourier method
     
     This function solves the nonlinear Schrodinger equation for pulse propagation in an optical fiber using the split-step Fourier method.
     The actual implementation is the "symtrical split-step-fourier", it starts with 
     Python-Implementation of the Matlab-Code from "SSPROP" found here: https://www.photonics.umd.edu/software/ssprop/
-    
-    NOTE: Dimensions / Units of the params can be anything. They just have to be consistent.
 
     :param u0: input signal (array)
     :param dt: time step between samples (sample time)
     :param dz: propagation stepsize (delta z)
     :param nz: number of steps. ie totalsteps = nz * dz
-    :param alpha: power loss coeficient
+    :param alphadb: power loss coeficient [dB/km]
     :param beta2: dispersion polynomial coefficient
     :param gamma: nonlinearity coefficient
     :param return_dict: Flag if only signal at end of phase or after every step should be returned
@@ -263,12 +261,13 @@ def splitstepfourier(u0, dt, dz, nz, alpha, beta2, gamma, return_dict=False):
 
     nt = len(u0)
     dw = 2 * np.pi * np.fft.fftfreq(nt,dt)
+    alphalin = alphadb / (10/np.log(10))
     if return_dict:
         output = {}
 
     # Linear operator (frequency domain)
-    linear_operator = np.exp((-alpha/2 - 1j * beta2 / 2 * np.square(dw)) * dz)
-    linear_operator_halfstep = np.exp((-alpha/2 - 1j * beta2 / 2 * np.square(dw)) * dz / 2)
+    linear_operator = np.exp((-alphalin/2 - 1j * beta2 / 2 * np.square(dw)) * dz)
+    linear_operator_halfstep = np.exp((-alphalin/2 - 1j * beta2 / 2 * np.square(dw)) * dz / 2)
 
     # Nonlinear operator (time domain)
     nonlinear_operator = lambda u : np.exp(-1j * gamma * np.square(np.absolute(u)) * dz)
