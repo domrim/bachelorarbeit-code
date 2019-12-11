@@ -74,13 +74,16 @@ output_matlab = matlab['u'].flatten()
 
 fig1, ax1 = plt.subplots(2, figsize=figure_size)
 
-ax1[0].plot(np.arange(output.size)*t_sample, np.square(np.abs(output)), linewidth=2.0, label='Python')
-ax1[0].plot(np.arange(output_matlab.size)*t_sample, np.square(np.abs(output_matlab)), linestyle=':', linewidth=2.0, label='Matlab')
+x_vals = np.arange(output.size)*t_sample
+ax1[0].plot(x_vals, np.square(np.abs(output)), linewidth=2.0, label='Python')
+ax1[0].plot(x_vals, np.square(np.abs(output_matlab)), linestyle=':', linewidth=2.0, label='Matlab')
 ax1[0].legend()
+ax1[0].set_xlim(np.amin(x_vals), np.amax(x_vals))
 
 ax1[1].plot(np.fft.fftshift(np.square(abs(t_sample*np.fft.fft(output)/np.sqrt(2*np.pi)))), linewidth=2.0,  label='Python')
 ax1[1].plot(np.fft.fftshift(np.square(abs(t_sample*np.fft.fft(output_matlab)/np.sqrt(2*np.pi)))), linestyle=':', linewidth=2.0, label='Matlab')
 ax1[1].legend()
+ax1[1].set_xlim(0,output.size-1)
 
 print(f"Relativer Fehler: {calc_relerr(output, output_matlab)}")
 

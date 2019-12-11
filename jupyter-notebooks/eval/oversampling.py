@@ -71,7 +71,7 @@ for n_up in range(1, n_up_max+1):
 fig1, ax1 = plt.subplots(1, figsize=figure_size)
 
 for key, item in outputs.items():
-    if key in ['1', '2', '3', '4', '8', '16']:
+    if key in ['1', '2', '3', '4', '16']:
         x_vals = np.arange(item.size)*sampletimes[key]
         ax1.plot(x_vals, np.square(np.abs(item)), label=key)
         ax1.set_xlim(np.amin(x_vals), np.amax(x_vals))
@@ -83,7 +83,7 @@ ax1.set_xlabel("$t[s]$")
 fig2, ax2 = plt.subplots(1, figsize=figure_size)
 
 for key, item in outputs.items():
-    if key in ['1', '2', '3', '4', '8', '16']:
+    if key in ['1', '2', '3', '4', '16']:
         x_vals = np.arange(item.size)*sampletimes[key]
         ax2.plot(x_vals, np.square(np.abs(item)), label=key)
     

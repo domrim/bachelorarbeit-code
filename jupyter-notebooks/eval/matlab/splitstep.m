@@ -17,7 +17,8 @@ t = ((1:nt)'-(nt+1)/2)*dt;   % time vector
 u0 = u0';
 w = wspace(T,nt);            % angular frequency vector
 vs = fftshift(w/(2*pi));     % frequency (shifted for plotting)
+alphalin = alpha/(10/log(10));
 
-u = ssprop(u0,dt,dz,nz,alpha,betap,gamma, 1, inf);   % propagate signal
+u = ssprop(u0,dt,dz,nz,alphalin,betap,gamma, 1, inf);   % propagate signal
 
 save("output.mat", "u");

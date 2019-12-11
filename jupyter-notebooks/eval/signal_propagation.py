@@ -3,6 +3,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
+from celluloid import Camera
 from itertools import cycle
 import tikzplotlib
 
@@ -17,6 +18,7 @@ plt.rcParams.update({
     'font.family': 'serif',
     'text.usetex': True,
     'pgf.rcfonts': False,
+    'font.size': 14,
 })
 
 
@@ -100,6 +102,40 @@ gamma = 1.3 # [1/W/km]
 output2 = splitstepfourier(send_new, t_sample_rc, dz, nz, alpha, beta2, gamma, True)
 
 
+## Animated Plot
+
+all_vals = np.square(np.abs(np.asarray([val for val in output2.values()]).flatten()))
+ymin = np.amin(all_vals)
+ymax = np.amax(all_vals)*1.1
+
+x_vals = np.arange(send_new.size)*t_sample_rc
+xmin = np.amin(x_vals)
+xmax = np.amax(x_vals)
+
+fig = plt.figure(figsize=(16,9))
+camera = Camera(fig)
+
+p = plt.plot(x_vals, np.square(np.abs(send_new)), label='Schritt 0 (0 km)', color='tab:blue')
+plt.xlim(xmin,xmax)
+plt.ylim(ymin,ymax)
+plt.title(f"Signalverlauf auf LWL")
+plt.ylabel("$|s|^2$")
+plt.legend(p, [f'Schritt 0 (0 km)'])
+plt.savefig(f'../../../bachelorarbeit-folien/abschlussvortrag/graphics/{output_fname}_wallpaper_noalpha.pdf')
+camera.snap()
+
+for key,val in output2.items():
+    p = plt.plot(x_vals, np.square(np.abs(val)), color='tab:blue')
+    plt.xlim(xmin,xmax)
+    plt.ylim(ymin,ymax)
+    plt.title(f"Signalverlauf auf LWL")
+    plt.ylabel("$|s|^2$")
+    plt.legend(p, [f'Schritt {key} ({float(key)*dz} km)'])
+    camera.snap()
+
+animation = camera.animate(interval=1000)
+
+
 fig2, ax2 = plt.subplots(len(output)+1, figsize=(15,30), sharex=True)
 
 colors = cycle(list(mcolors.TABLEAU_COLORS))
@@ -140,4 +176,6 @@ tikzplotlib.save(f'{output_path}{output_fname}_noalpha.tex', figure=fig2, figure
 
 fig1.savefig(f"{output_path}{output_fname}.pdf", bbox_inches='tight')
 fig2.savefig(f"{output_path}{output_fname}_noalpha.pdf", bbox_inches='tight')
+
+animation.save(f'../../../bachelorarbeit-folien/abschlussvortrag/graphics/{output_fname}_animated_noalpha.mp4', dpi=96)
 

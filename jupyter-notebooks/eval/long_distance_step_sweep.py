@@ -11,7 +11,7 @@ DEBUG_PLOT = False
 # showing figures inline
 get_ipython().run_line_magic('matplotlib', 'inline')
 # plotting options 
-figure_size = (16, 9)
+figure_size = (4, 3)
 plt.rcParams.update({
     'font.family': 'serif',
     'text.usetex': True,
@@ -100,8 +100,6 @@ for nz in range(1,nz_max+1):
         final_output = rest_output
     
     outputs[f'{nz}'] = final_output
-        
-        
 
 
 fig1, ax1 = plt.subplots(1, figsize=figure_size)
