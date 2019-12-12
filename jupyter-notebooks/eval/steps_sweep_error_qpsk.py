@@ -30,7 +30,7 @@ t_sample_rc, rc = get_rc_ir(syms_per_filt, r_rc, f_symbol, n_up)
 M = 4
 
 modulation = {f"{i:02b}": np.cos(2 * np.pi * (i - 1) / M + (np.pi/4)) + np.sin(2 * np.pi * (i - 1) / M + (np.pi/4)) * (0 + 1j) for i in range(M)}
-n_symbol = 30 # number of symbols
+n_symbol = 1000 # number of symbols
 
 # Signalfolge generieren
 send_bits = np.random.choice([symbol for symbol in modulation.keys()], size=n_symbol)

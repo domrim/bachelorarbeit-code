@@ -30,7 +30,7 @@ t_sample_rc, rc = get_rc_ir(syms_per_filt, r_rc, f_symbol, n_up)
 M = 16
 qam = [ ((2*(m+1)-np.sqrt(M)-1) + 1j*(2*(n+1)-np.sqrt(M)-1)) for n in range(int(np.sqrt(M))) for m in range(int(np.sqrt(M))) ]
 modulation = {f"{i:04b}": symb for (i, symb) in zip(range(M), qam)}
-n_symbol = 30 # number of symbols
+n_symbol = 1000 # number of symbols
 
 
 # Signalfolge generieren
