@@ -80,10 +80,10 @@ ax1[0].plot(x_vals, np.square(np.abs(output_matlab)), linestyle=':', linewidth=2
 ax1[0].legend()
 ax1[0].set_xlim(np.amin(x_vals), np.amax(x_vals))
 
-ax1[1].plot(np.fft.fftshift(np.square(abs(t_sample*np.fft.fft(output)/np.sqrt(2*np.pi)))), linewidth=2.0,  label='Python')
-ax1[1].plot(np.fft.fftshift(np.square(abs(t_sample*np.fft.fft(output_matlab)/np.sqrt(2*np.pi)))), linestyle=':', linewidth=2.0, label='Matlab')
+ax1[1].plot(np.fft.fftshift(np.fft.fftfreq(len(output),t_sample)), np.fft.fftshift(np.square(abs(t_sample*np.fft.fft(output)/np.sqrt(2*np.pi)))), linewidth=2.0,  label='Python')
+ax1[1].plot(np.fft.fftshift(np.fft.fftfreq(len(output),t_sample)), np.fft.fftshift(np.square(abs(t_sample*np.fft.fft(output_matlab)/np.sqrt(2*np.pi)))), linestyle=':', linewidth=2.0, label='Matlab')
 ax1[1].legend()
-ax1[1].set_xlim(0,output.size-1)
+ax1[1].set_xlim(np.amin(np.fft.fftshift(np.fft.fftfreq(len(output),t_sample))), np.amax(np.fft.fftshift(np.fft.fftfreq(len(output),t_sample))))
 
 print(f"Relativer Fehler: {calc_relerr(output, output_matlab)}")
 

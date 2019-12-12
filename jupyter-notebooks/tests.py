@@ -129,12 +129,15 @@ ax4[1][0].plot(np.arange(output.size)*t_sample_rc, np.square(abs(output)), linew
 ax4[1][0].grid(True)
 ax4[1][0].legend(loc='upper right')
 
-ax4[0][1].plot(np.fft.fftshift(np.square(abs(t_sample_gaussian*np.fft.fft(send)/np.sqrt(2*np.pi)))), linewidth=2.0, label='Input')
+ax4[0][1].plot(np.fft.fftshift(np.fft.fftfreq(len(send),t_sample_rc)), np.fft.fftshift(np.square(abs(t_sample_rc*np.fft.fft(send)/np.sqrt(2*np.pi)))), linewidth=2.0, label='Input')
 ax4[0][1].grid(True)
 ax4[0][1].set_title('Frequency Domain')
 ax4[0][1].legend(loc='upper right')
 
-ax4[1][1].plot(np.fft.fftshift(np.square(abs(t_sample_gaussian*np.fft.fft(output)/np.sqrt(2*np.pi)))), linewidth=2.0, label='Output', color='tab:orange')
+ax4[1][1].plot(np.fft.fftshift(np.fft.fftfreq(len(output),t_sample_rc)), np.fft.fftshift(np.square(abs(t_sample_rc*np.fft.fft(output)/np.sqrt(2*np.pi)))), linewidth=2.0, label='Output', color='tab:orange')
 ax4[1][1].grid(True)
 ax4[1][1].legend(loc='upper right')
+
+
+
 
