@@ -35,7 +35,7 @@ P_in = 19 # dBm
 # modulation scheme and constellation points
 M = 2
 modulation = {'0': -1, '1': 1}
-n_symbol = 30 # number of symbols
+n_symbol = 20 # number of symbols
 
 # Signalfolge generieren
 send_bits = np.random.choice([symbol for symbol in modulation.keys()], size=n_symbol)
@@ -91,7 +91,7 @@ print(f"Relativer Fehler: {calc_relerr(output, output_matlab)}")
 output_fname = "compare_matlab"
 output_path = "../../../bachelorarbeit-ausarbeitung/figures/plots/"
 
-tikzplotlib.save(f'{output_path}{output_fname}.tex', figure=fig1, figureheight="\\figheight", figurewidth="\\figwidth")
+tikzplotlib.save(f'{output_path}{output_fname}.tex', figure=fig1, wrap=False, add_axis_environment=False, externalize_tables=True, override_externals=True)
 
 fig1.savefig(f"{output_path}{output_fname}.pdf", bbox_inches='tight')
 

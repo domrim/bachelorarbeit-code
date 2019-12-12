@@ -94,8 +94,8 @@ ax2.set_xlim(0.5e-9, 0.75e-9)
 output_fname = "oversampling"
 output_path = "../../../bachelorarbeit-ausarbeitung/figures/plots/"
 
-tikzplotlib.save(f'{output_path}{output_fname}_full.tex', figure=fig1, figureheight="\\figheight", figurewidth="\\figwidth")
-tikzplotlib.save(f'{output_path}{output_fname}_zoom.tex', figure=fig2, figureheight="\\figheight", figurewidth="\\figwidth")
+tikzplotlib.save(f'{output_path}{output_fname}_full.tex', figure=fig1, wrap=False, add_axis_environment=False, externalize_tables=True, override_externals=True)
+tikzplotlib.save(f'{output_path}{output_fname}_zoom.tex', figure=fig2, wrap=False, add_axis_environment=False, externalize_tables=True, override_externals=True)
 
 fig1.savefig(f"{output_path}{output_fname}_full.pdf", bbox_inches='tight')
 fig2.savefig(f"{output_path}{output_fname}_zoom.pdf", bbox_inches='tight')

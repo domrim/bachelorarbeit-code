@@ -158,10 +158,10 @@ plot4.set_xlabel("Anzahl simulierter Schritte (nz)")
 output_fname = "steps_sweep_bpsk"
 output_path = "../../../bachelorarbeit-ausarbeitung/figures/plots/"
 
-tikzplotlib.save(f'{output_path}{output_fname}_full.tex', figure=fig1, figureheight="\\figheight", figurewidth="\\figwidth")
-tikzplotlib.save(f'{output_path}{output_fname}_zoom.tex', figure=fig2, figureheight="\\figheight", figurewidth="\\figwidth")
-tikzplotlib.save(f'{output_path}{output_fname}_full_noalpha.tex', figure=fig3, figureheight="\\figheight", figurewidth="\\figwidth")
-tikzplotlib.save(f'{output_path}{output_fname}_zoom_noalpha.tex', figure=fig4, figureheight="\\figheight", figurewidth="\\figwidth")
+tikzplotlib.save(f'{output_path}{output_fname}_full.tex', figure=fig1, wrap=False, add_axis_environment=False, externalize_tables=True, override_externals=True)
+tikzplotlib.save(f'{output_path}{output_fname}_zoom.tex', figure=fig2, wrap=False, add_axis_environment=False, externalize_tables=True, override_externals=True)
+tikzplotlib.save(f'{output_path}{output_fname}_full_noalpha.tex', figure=fig3, wrap=False, add_axis_environment=False, externalize_tables=True, override_externals=True)
+tikzplotlib.save(f'{output_path}{output_fname}_zoom_noalpha.tex', figure=fig4, wrap=False, add_axis_environment=False, externalize_tables=True, override_externals=True)
 
 fig1.savefig(f"{output_path}{output_fname}_full.pdf", bbox_inches='tight')
 fig2.savefig(f"{output_path}{output_fname}_zoom.pdf", bbox_inches='tight')
