@@ -11,7 +11,7 @@ DEBUG_PLOT = False
 # showing figures inline
 get_ipython().run_line_magic('matplotlib', 'inline')
 # plotting options 
-figure_size = (4, 3)
+figure_size = (16, 9)
 plt.rcParams.update({
     'font.family': 'serif',
     'text.usetex': True,
