@@ -44,6 +44,8 @@ send_bits_bpsk = np.random.choice([symbol for symbol in modulation_bpsk.keys()],
 send_bits_qpsk = np.random.choice([symbol for symbol in modulation_qpsk.keys()], size=n_symbol)
 send_bits_qam = np.random.choice([symbol for symbol in modulation_qam.keys()], size=n_symbol)
 
+power_list = [0,5]
+
 
 ## Global Transmission parameters
 z_length = 70  # [km]
@@ -58,7 +60,7 @@ gamma = 1.3 # [1/W/km]
 all_sims = {}
 for modulation, send_bits, name in [(modulation_bpsk, send_bits_bpsk, "bpsk"), (modulation_qpsk, send_bits_qpsk, "qpsk"), (modulation_qam, send_bits_qam, "16qam")]:
     sims ={}
-    for power in [5]:
+    for power in power_list:
         send_rc = generate_signal(modulation, t_sample_rc, 1/f_symbol, send_bits, rc, syms_per_filt, power)
         send = add_zeros(send_rc, 100 * int(1/f_symbol/t_sample_rc))
 
@@ -105,7 +107,7 @@ for name, sims in all_sims.items():
             x_vals.append(n_steps)
             y_vals.append(abs(calc_relerr(sim_out, ref)))
 
-        plot1.plot(x_vals, y_vals, label=f"{name}", color=linestyle, linestyle=lines.pop())
+        plot1.plot(x_vals, y_vals, label=f"{key} {name}", color=linestyle, linestyle=lines.pop())
         #if key in ['-5', '0', '3', '5', '6', '7', '8', '9']:
         #    plot2.plot(x_vals, y_vals, label=key)
 
@@ -137,7 +139,7 @@ gamma = 1.3 # [1/W/km]
 all_sims2 = {}
 for modulation, send_bits, name in [(modulation_bpsk, send_bits_bpsk, "bpsk"), (modulation_qpsk, send_bits_qpsk, "qpsk"), (modulation_qam, send_bits_qam, "16qam")]:
     sims ={}
-    for power in [5]:
+    for power in power_list:
         send_rc = generate_signal(modulation, t_sample_rc, 1/f_symbol, send_bits, rc, syms_per_filt, power)
         send = add_zeros(send_rc, 100 * int(1/f_symbol/t_sample_rc))
 
@@ -207,12 +209,8 @@ output_fname = "steps_sweep_allmod"
 output_path = "../../../bachelorarbeit-ausarbeitung/figures/plots/"
 
 tikzplotlib.save(f'{output_path}{output_fname}_full.tex', figure=fig1, wrap=False, add_axis_environment=False, externalize_tables=True, override_externals=True)
-#tikzplotlib.save(f'{output_path}{output_fname}_zoom.tex', figure=fig2, wrap=False, add_axis_environment=False, externalize_tables=True, override_externals=True)
 tikzplotlib.save(f'{output_path}{output_fname}_full_noalpha.tex', figure=fig3, wrap=False, add_axis_environment=False, externalize_tables=True, override_externals=True)
-#tikzplotlib.save(f'{otput_path}{output_fname}_zoom_noalpha.tex', figure=fig4, wrap=False, add_axis_environment=False, externalize_tables=True, override_externals=True)
 
 fig1.savefig(f"{output_path}{output_fname}_full.pdf", bbox_inches='tight')
-#fig2.savefig(f"{output_path}{output_fname}_zoom.pdf", bbox_inches='tight')
 fig3.savefig(f"{output_path}{output_fname}_full_noalpha.pdf", bbox_inches='tight')
-#fig4.savefig(f"{output_path}{output_fname}_zoom_noalpha.pdf", bbox_inches='tight')
 
