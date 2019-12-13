@@ -81,11 +81,11 @@ for key, val in output.items():
     ax1[counter].plot(x_vals, np.square(np.abs(val)), label=key, color=next(colors))
     ax1[counter].set_ylim(bottom=0)
     ax1[counter].set_title(f"after {key} steps ({float(key)*dz} km)")
-    ax1[counter].set_ylabel("$|s|^2$")
+    ax1[counter].set_ylabel("$|s|^2$ [W]")
     counter += 1
 
 ax1[counter-1].set_title(f"Output ({z_length} km)")
-ax1[counter-1].set_xlabel("t [s]")
+ax1[counter-1].set_xlabel("$t$ [s]")
 
 
 ## Transmission
@@ -109,7 +109,7 @@ counter = 0
 all_vals = np.square(np.abs(np.asarray([val for val in output2.values()]).flatten()))
 ymin = np.amin(all_vals)
 ymax = np.amax(all_vals)*1.1
-
+print(ymax)
 x_vals = np.arange(send_new.size)*t_sample_rc
 xmin = np.amin(x_vals)
 xmax = np.amax(x_vals)
@@ -126,82 +126,82 @@ for key, val in output2.items():
     ax2[counter].set_xlim(xmin, xmax)
     ax2[counter].set_ylim(ymin, ymax)
     ax2[counter].set_title(f"after {key} steps ({float(key)*dz} km)")
-    ax2[counter].set_ylabel("$|s|^2$")
+    ax2[counter].set_ylabel("$|s|^2$ [W]")
     counter += 1
     
 ax2[counter-1].set_title(f"Output ({z_length} km)")
-ax2[counter-1].set_xlabel("t [s]")
+ax2[counter-1].set_xlabel("$t$ [s]")
 
 
 # parameters
-f_symbol = 32e9  # symbol rate (Baud) (Symbols per second)
-n_up = 10  # samples per symbol (>1 => oversampling)
+f_symbol2 = 32e9  # symbol rate (Baud) (Symbols per second)
+n_up2 = 10  # samples per symbol (>1 => oversampling)
 
-r_rc = .33
-syms_per_filt = 4  # symbols per filter (plus minus in both directions)
-t_sample_rc, rc = get_rc_ir(syms_per_filt, r_rc, f_symbol, n_up)
+r_rc2 = .33
+syms_per_filt2 = 4  # symbols per filter (plus minus in both directions)
+t_sample_rc2, rc2 = get_rc_ir(syms_per_filt2, r_rc2, f_symbol2, n_up2)
 
-power = 5
+power2 = 5
 
 # modulation scheme and constellation points
-M = 2
-modulation = {'0': -1, '1': 1}
-n_symbol = 10 # number of symbols
+M2 = 2
+modulation2 = {'0': -1, '1': 1}
+n_symbol2 = 10 # number of symbols
 
 # Signalfolge generieren
-send_bits = np.random.choice([symbol for symbol in modulation.keys()], size=n_symbol)
+send_bits2 = np.random.choice([symbol for symbol in modulation2.keys()], size=n_symbol2)
 
 # Sendesignal generieren
-send_rc = generate_signal(modulation, t_sample_rc, 1/f_symbol, send_bits, rc, syms_per_filt, power)
+send_rc2 = generate_signal(modulation2, t_sample_rc2, 1/f_symbol2, send_bits2, rc2, syms_per_filt2, power2)
 
 # add zeros before and after signal (use samples per symbol as factor)
-send_new = add_zeros(send_rc, 5 * int(1/f_symbol/t_sample_rc))
+send_new2 = add_zeros(send_rc2, 5 * int(1/f_symbol2/t_sample_rc2))
 
 
 ## Transmission
-z_length = 70  # [km]
-nz = 100  # steps
-dz = z_length / nz  # [km]
+z_length2 = 70  # [km]
+nz2 = 100  # steps
+dz2 = z_length2 / nz2  # [km]
 
-alpha = 0  # Dämpfung [dB/km]
-D = 17  # [ps/nm/km]
-beta2 = - (D * np.square(1550e-9)) / (2 * np.pi * 3e8) * 1e-3 # [s^2/km] propagation constant, lambda=1550nm is standard single-mode wavelength
-gamma = 1.3 # [1/W/km]
+alpha2 = 0  # Dämpfung [dB/km]
+D2 = 17  # [ps/nm/km]
+beta22 = - (D2 * np.square(1550e-9)) / (2 * np.pi * 3e8) * 1e-3 # [s^2/km] propagation constant, lambda=1550nm is standard single-mode wavelength
+gamma2 = 1.3 # [1/W/km]
 
-output3 = splitstepfourier(send_new, t_sample_rc, dz, nz, alpha, beta2, gamma, True)
+output3 = splitstepfourier(send_new2, t_sample_rc2, dz2, nz2, alpha2, beta22, gamma2, True)
 
 
 ## Animated Plot
 plt.rcParams.update({'font.size': 22})
 
-all_vals = np.square(np.abs(np.asarray([val for val in output3.values()]).flatten()))
-ymin = np.amin(all_vals)
-ymax = np.amax(all_vals)*1.1
+all_vals2 = np.square(np.abs(np.asarray([val for val in output3.values()]).flatten()))
+ymin2 = np.amin(all_vals2)
+ymax2 = np.amax(all_vals2)*1.1
 
-x_vals = np.arange(send_new.size)*t_sample_rc
-xmin = np.amin(x_vals)
-xmax = np.amax(x_vals)
+x_vals2 = np.arange(send_new2.size)*t_sample_rc
+xmin2 = np.amin(x_vals2)
+xmax2 = np.amax(x_vals2)
 
 fig = plt.figure(figsize=(16,9))
 camera = Camera(fig)
 
-p = plt.plot(x_vals, np.square(np.abs(send_new)), label='Schritt 0 (0 km)', color='tab:blue')
-plt.xlim(xmin,xmax)
-plt.ylim(ymin,ymax)
-plt.title(f"Signalverlauf auf LWL")
-plt.ylabel("$|s|^2$")
-plt.xlabel("$t[$s$]$")
-plt.legend(p, [f'Schritt 0.0'])
-plt.savefig(f'../../../bachelorarbeit-folien/abschlussvortrag/graphics/fiber_propagation_wallpaper_noalpha.pdf')
+p = plt.plot(x_vals2, np.square(np.abs(send_new2)), label='Schritt 0 (0 km)', color='tab:blue')
+plt.xlim(xmin2,xmax2)
+plt.ylim(ymin2,ymax2)
+plt.title("Signalverlauf auf LWL")
+plt.ylabel("$|s|^2$ [W]")
+plt.xlabel("$t$ [s]")
+plt.legend(p, ['Schritt 0.0'])
+plt.savefig('../../../bachelorarbeit-folien/abschlussvortrag/graphics/fiber_propagation_wallpaper_noalpha.pdf')
 camera.snap()
 
 for key,val in output3.items():
-    p = plt.plot(x_vals, np.square(np.abs(val)), color='tab:blue')
-    plt.xlim(xmin,xmax)
-    plt.ylim(ymin,ymax)
-    plt.title(f"Signalverlauf auf LWL")
-    plt.ylabel("$|s|^2$")
-    plt.xlabel("$t[$s$]$")
+    p = plt.plot(x_vals2, np.square(np.abs(val)), color='tab:blue')
+    plt.xlim(xmin2,xmax2)
+    plt.ylim(ymin2,ymax2)
+    plt.title("Signalverlauf auf LWL")
+    plt.ylabel("$|s|^2$ [W]")
+    plt.xlabel("$t$ [s]")
     plt.legend(p, [f'Schritt {key}'])
     camera.snap()
 
