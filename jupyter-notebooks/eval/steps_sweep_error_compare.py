@@ -60,7 +60,7 @@ for modulation, send_bits, name in [(modulation_bpsk, send_bits_bpsk, "bpsk"), (
     sims ={}
     for power in [5]:
         send_rc = generate_signal(modulation, t_sample_rc, 1/f_symbol, send_bits, rc, syms_per_filt, power)
-        send = zeroing(send_rc, 100 * int(1/f_symbol/t_sample_rc))
+        send = add_zeros(send_rc, 100 * int(1/f_symbol/t_sample_rc))
 
         ## Simulation of reference transmission (dz = 0.1 km)
         nz_ref = 100  # steps
@@ -139,7 +139,7 @@ for modulation, send_bits, name in [(modulation_bpsk, send_bits_bpsk, "bpsk"), (
     sims ={}
     for power in [5]:
         send_rc = generate_signal(modulation, t_sample_rc, 1/f_symbol, send_bits, rc, syms_per_filt, power)
-        send = zeroing(send_rc, 100 * int(1/f_symbol/t_sample_rc))
+        send = add_zeros(send_rc, 100 * int(1/f_symbol/t_sample_rc))
 
         ## Simulation of reference transmission (dz = 0.1 km)
         nz_ref = 100  # steps

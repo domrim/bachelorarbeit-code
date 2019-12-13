@@ -21,7 +21,7 @@ def calc_relerr(comp_value, ref_value):
     return zaehler/nenner
 
 
-def zeroing(signal, n):
+def add_zeros(signal, n):
     # add zeros before and after signal
     zeros = np.zeros(n)
     padded_signal = np.concatenate((zeros, signal, zeros))

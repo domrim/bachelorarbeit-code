@@ -114,7 +114,7 @@ D = 17  # [ps/nm/km]
 beta2 = - (D * np.square(1550e-9)) / (2 * np.pi * 3e8) * 1e-3 # [s^2/km] propagation constant, lambda=1550nm is standard single-mode wavelength
 gamma = 1.3 # [1/W/km]
 
-send = zeroing(send_rc, 5 * int(1/f_symbol/t_sample_rc))
+send = add_zeros(send_rc, 5 * int(1/f_symbol/t_sample_rc))
 
 output = splitstepfourier(send, t_sample_rc, int(z_length/10), 10, alpha_neu, beta2, gamma)
 

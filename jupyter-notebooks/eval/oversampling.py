@@ -59,7 +59,7 @@ for n_up in range(1, n_up_max+1):
     # Sendesignal generieren
     send_ir = generate_signal(modulation, t_sample, 1/f_symbol, send_bits, ir, syms_per_filt, P_in)
     # add zeros before and after signal (use samples per symbol as factor)
-    send = zeroing(send_ir, 10 * int(1/f_symbol/t_sample))
+    send = add_zeros(send_ir, 10 * int(1/f_symbol/t_sample))
     # transmission
     output = splitstepfourier(send, t_sample, dz, nz, alpha, beta2, gamma)
 

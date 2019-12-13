@@ -44,7 +44,7 @@ send_bits = np.random.choice([symbol for symbol in modulation.keys()], size=n_sy
 send_ir = generate_signal(modulation, t_sample, 1/f_symbol, send_bits, ir, syms_per_filt, P_in)
 
 # add zeros before and after signal (use samples per symbol as factor)
-send = zeroing(send_ir, 10 * int(1/f_symbol/t_sample))
+send = add_zeros(send_ir, 10 * int(1/f_symbol/t_sample))
 
 
 ## Transmission parameters
