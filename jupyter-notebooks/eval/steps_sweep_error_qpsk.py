@@ -49,19 +49,20 @@ gamma = 1.3 # [1/W/km]
 sims ={}
 for power in np.arange(-5,10):
     send_rc = generate_signal(modulation, t_sample_rc, 1/f_symbol, send_bits, rc, syms_per_filt, power)
+    send = add_zeros(send_rc, 100 * int(1/f_symbol/t_sample_rc))
 
     ## Simulation of reference transmission (dz = 0.1 km)
     nz_ref = 100  # steps
     dz_ref = z_length / nz_ref  # [km]
 
-    output_ref = splitstepfourier(send_rc, t_sample_rc, dz_ref, nz_ref, alpha, beta2, gamma)
+    output_ref = splitstepfourier(send, t_sample_rc, dz_ref, nz_ref, alpha, beta2, gamma)
 
     d_nz = 1 # d_nz to use in loop
     ## Simulation of fibers with different step sizes
     step_sweep_sim = []
     for nz in np.arange(1, nz_ref+d_nz, step=d_nz):
         dz = z_length / nz
-        output = splitstepfourier(send_rc, t_sample_rc, dz, nz, alpha, beta2, gamma)
+        output = splitstepfourier(send, t_sample_rc, dz, nz, alpha, beta2, gamma)
         step_sweep_sim.append((nz, output))
     
     sims[f"{power}"] = (output_ref, step_sweep_sim)
@@ -104,19 +105,20 @@ plot2.set_xlabel("Anzahl simulierter Schritte (nz)")
 sims2 ={}
 for power in np.arange(-5,10):
     send_rc = generate_signal(modulation, t_sample_rc, 1/f_symbol, send_bits, rc, syms_per_filt, power)
+    send = add_zeros(send_rc, 100 * int(1/f_symbol/t_sample_rc))
 
     ## Simulation of reference transmission (dz = 0.1 km)
     nz_ref = 100  # steps
     dz_ref = z_length / nz_ref  # [km]
 
-    output_ref = splitstepfourier(send_rc, t_sample_rc, dz_ref, nz_ref, 0, beta2, gamma)
+    output_ref = splitstepfourier(send, t_sample_rc, dz_ref, nz_ref, 0, beta2, gamma)
 
     d_nz = 1 # d_nz to use in loop
     ## Simulation of fibers with different step sizes
     step_sweep_sim = []
     for nz in np.arange(1, nz_ref+d_nz, step=d_nz):
         dz = z_length / nz
-        output = splitstepfourier(send_rc, t_sample_rc, dz, nz, 0, beta2, gamma)
+        output = splitstepfourier(send, t_sample_rc, dz, nz, 0, beta2, gamma)
         step_sweep_sim.append((nz, output))
     
     sims2[f"{power}"] = (output_ref, step_sweep_sim)
