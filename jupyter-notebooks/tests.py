@@ -67,7 +67,7 @@ M = 2
 modulation = {'0': -1, '1': 1}
 n_symbol = 10 # number of symbols
 
-P_in = 19  # Send Power in [dBm]
+P_in = 5  # Send Power in [dBm]
 
 # Signalfolge generieren
 send_bits = np.random.choice([symbol for symbol in modulation.keys()], size=n_symbol)
@@ -108,15 +108,13 @@ nz = 10  # steps
 dz = z_length / nz  # [km]
 
 alpha = 0.2 # Dämpfung [dB/km]
-alpha_neu = alpha/4.343
-print(alpha_neu)
 D = 17  # [ps/nm/km]
 beta2 = - (D * np.square(1550e-9)) / (2 * np.pi * 3e8) * 1e-3 # [s^2/km] propagation constant, lambda=1550nm is standard single-mode wavelength
 gamma = 1.3 # [1/W/km]
 
 send = add_zeros(send_rc, 5 * int(1/f_symbol/t_sample_rc))
 
-output = splitstepfourier(send, t_sample_rc, int(z_length/10), 10, alpha_neu, beta2, gamma)
+output = splitstepfourier(send, t_sample_rc, int(z_length/10), 10, alpha, beta2, gamma)
 
 fig4, ax4 = plt.subplots(2,2, figsize=figure_size)
 

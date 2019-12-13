@@ -40,7 +40,7 @@ def dbm2watt(power_dbm):
 
 
 def calc_power(signal, T_sample, T_symbol):
-    return np.sum(signal * np.conj(signal))*T_sample/T_symbol
+    return np.sum(signal * np.conj(signal)) * T_sample/T_symbol
 
 
 # Filter Definitions
