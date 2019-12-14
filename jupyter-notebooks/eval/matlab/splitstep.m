@@ -19,6 +19,8 @@ w = wspace(T,nt);            % angular frequency vector
 vs = fftshift(w/(2*pi));     % frequency (shifted for plotting)
 alphalin = alpha/(10/log(10));
 
+tic;
 u = ssprop(u0,dt,dz,nz,alphalin,betap,gamma, 1, inf);   % propagate signal
+duration = toc;
 
-save("output.mat", "u");
+save("output.mat");
