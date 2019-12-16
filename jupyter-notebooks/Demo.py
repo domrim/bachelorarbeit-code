@@ -40,9 +40,9 @@ n_symbol = 4 # number of symbols
 # generate send signal
 send_bits = np.random.choice([symbol for symbol in modulation.keys()], size=n_symbol)
 
-send_rc = generate_signal(modulation, send_bits, rc, syms_per_filt)
-send_rrc = generate_signal(modulation, send_bits, rrc, syms_per_filt)
-send_gaussian = generate_signal(modulation, send_bits, gaussian, 0)
+send_rc = generate_signal(modulation, send_bits, rc, syms_per_filt, n_symbol)
+send_rrc = generate_signal(modulation, send_bits, rrc, syms_per_filt, n_symbol)
+send_gaussian = generate_signal(modulation, send_bits, gaussian, 0, n_symbol)
 
 
 # Transmission

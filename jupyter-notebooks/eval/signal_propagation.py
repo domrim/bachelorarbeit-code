@@ -42,7 +42,7 @@ send_bits = np.random.choice([symbol for symbol in modulation.keys()], size=n_sy
 
 
 # Sendesignal generieren
-send_rc = generate_signal(modulation, t_sample_rc, 1/f_symbol, send_bits, rc, syms_per_filt, power)
+send_rc = generate_signal(modulation, t_sample_rc, 1/f_symbol, send_bits, rc, syms_per_filt, n_symbol, power)
 
 # add zeros before and after signal (use samples per symbol as factor)
 send_new = add_zeros(send_rc, 5 * int(1/f_symbol/t_sample_rc))
@@ -152,7 +152,7 @@ n_symbol2 = 10 # number of symbols
 send_bits2 = np.random.choice([symbol for symbol in modulation2.keys()], size=n_symbol2)
 
 # Sendesignal generieren
-send_rc2 = generate_signal(modulation2, t_sample_rc2, 1/f_symbol2, send_bits2, rc2, syms_per_filt2, power2)
+send_rc2 = generate_signal(modulation2, t_sample_rc2, 1/f_symbol2, send_bits2, rc2, syms_per_filt2, n_symbol2, power2)
 
 # add zeros before and after signal (use samples per symbol as factor)
 send_new2 = add_zeros(send_rc2, 5 * int(1/f_symbol2/t_sample_rc2))

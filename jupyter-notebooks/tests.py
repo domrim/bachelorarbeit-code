@@ -72,9 +72,9 @@ P_in = 5  # Send Power in [dBm]
 # Signalfolge generieren
 send_bits = np.random.choice([symbol for symbol in modulation.keys()], size=n_symbol)
 
-send_rc = generate_signal(modulation, t_sample_rc, 1/f_symbol, send_bits, rc, syms_per_filt, P_in)
-send_rrc = generate_signal(modulation, t_sample_rrc, 1/f_symbol, send_bits, rrc, syms_per_filt, P_in)
-send_gaussian = generate_signal(modulation, t_sample_gaussian, 1/f_symbol, send_bits, gaussian, 0, P_in)
+send_rc = generate_signal(modulation, t_sample_rc, 1/f_symbol, send_bits, rc, syms_per_filt, n_symbol, P_in)
+send_rrc = generate_signal(modulation, t_sample_rrc, 1/f_symbol, send_bits, rrc, syms_per_filt, n_symbol, P_in)
+send_gaussian = generate_signal(modulation, t_sample_gaussian, 1/f_symbol, send_bits, gaussian, 0, n_symbol, P_in)
 
 fig3, ax3 = plt.subplots(1,2, figsize=figure_size)
 

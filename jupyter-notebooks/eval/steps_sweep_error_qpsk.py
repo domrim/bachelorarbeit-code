@@ -48,7 +48,7 @@ gamma = 1.3 # [1/W/km]
 # simulate channel for multiple power inputs
 sims ={}
 for power in np.arange(-5,10):
-    send_rc = generate_signal(modulation, t_sample_rc, 1/f_symbol, send_bits, rc, syms_per_filt, power)
+    send_rc = generate_signal(modulation, t_sample_rc, 1/f_symbol, send_bits, rc, syms_per_filt, n_symbol, power)
     send = add_zeros(send_rc, 100 * int(1/f_symbol/t_sample_rc))
 
     ## Simulation of reference transmission (dz = 0.1 km)
@@ -104,7 +104,7 @@ plot2.set_xlabel("Anzahl simulierter Schritte (nz)")
 # simulate channel for multiple power inputs without alpha
 sims2 ={}
 for power in np.arange(-5,10):
-    send_rc = generate_signal(modulation, t_sample_rc, 1/f_symbol, send_bits, rc, syms_per_filt, power)
+    send_rc = generate_signal(modulation, t_sample_rc, 1/f_symbol, send_bits, rc, syms_per_filt, n_symbol, power)
     send = add_zeros(send_rc, 100 * int(1/f_symbol/t_sample_rc))
 
     ## Simulation of reference transmission (dz = 0.1 km)

@@ -6,6 +6,7 @@ import tikzplotlib
 import subprocess
 import scipy.io as sio
 import os
+import time
 
 get_ipython().run_line_magic('run', "'./../split_step_fourier.ipynb'")
 DEBUG = False
@@ -41,7 +42,7 @@ n_symbol = 20 # number of symbols
 send_bits = np.random.choice([symbol for symbol in modulation.keys()], size=n_symbol)
 
 # Sendesignal generieren
-send_ir = generate_signal(modulation, t_sample, 1/f_symbol, send_bits, ir, syms_per_filt, P_in)
+send_ir = generate_signal(modulation, t_sample, 1/f_symbol, send_bits, ir, syms_per_filt, n_symbol, P_in)
 
 # add zeros before and after signal (use samples per symbol as factor)
 send = add_zeros(send_ir, 10 * int(1/f_symbol/t_sample))
@@ -62,7 +63,9 @@ sio.savemat('matlab/vars.mat', {'u0': send, 'dt': t_sample, 'dz': dz, 'nz': nz, 
 
 
 # simulate python-transmission
+start = time.time()
 output = splitstepfourier(send, t_sample, dz, nz, alpha, beta2, gamma)
+duration_python = (time.time() - start)
 # simulate matlab-transmission
 print("Please execute matlab.sh in ./matlab")
 
@@ -70,6 +73,7 @@ print("Please execute matlab.sh in ./matlab")
 # load matlab output
 matlab = sio.loadmat('matlab/output.mat')
 output_matlab = matlab['u'].flatten()
+duration_matlab = matlab['duration'].flatten()[0]
 
 
 fig1, ax1 = plt.subplots(2, figsize=figure_size)
@@ -86,6 +90,9 @@ ax1[1].legend()
 ax1[1].set_xlim(np.amin(np.fft.fftshift(np.fft.fftfreq(len(output),t_sample))), np.amax(np.fft.fftshift(np.fft.fftfreq(len(output),t_sample))))
 
 print(f"Relativer Fehler: {calc_relerr(output, output_matlab)}")
+print(f"Simulationsdauer Matlab: {duration_matlab} s")
+print(f"Simulationsdauer Python: {duration_python} s")
+print(f"Python is {duration_matlab/duration_python} times faster than Matlab")
 
 
 output_fname = "compare_matlab"

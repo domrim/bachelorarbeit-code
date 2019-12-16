@@ -42,7 +42,7 @@ send_bits = np.random.choice([symbol for symbol in modulation.keys()], size=n_sy
 
 
 # Sendesignal generieren
-send_ir = generate_signal(modulation, t_sample, 1/f_symbol, send_bits, ir, syms_per_filt)
+send_ir = generate_signal(modulation, t_sample, 1/f_symbol, send_bits, ir, syms_per_filt, n_symbol)
 
 # add zeros before and after signal (use samples per symbol as factor)
 send = add_zeros(send_ir, 70 * int(1/f_symbol/t_sample))

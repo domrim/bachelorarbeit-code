@@ -57,7 +57,7 @@ for n_up in range(1, n_up_max+1):
     # Pulse IR
     t_sample, ir  = get_rc_ir(syms_per_filt, r_rc, f_symbol, n_up)
     # Sendesignal generieren
-    send_ir = generate_signal(modulation, t_sample, 1/f_symbol, send_bits, ir, syms_per_filt, P_in)
+    send_ir = generate_signal(modulation, t_sample, 1/f_symbol, send_bits, ir, syms_per_filt, n_symbol, P_in)
     # add zeros before and after signal (use samples per symbol as factor)
     send = add_zeros(send_ir, 10 * int(1/f_symbol/t_sample))
     # transmission
@@ -71,7 +71,7 @@ for n_up in range(1, n_up_max+1):
 fig1, ax1 = plt.subplots(1, figsize=figure_size)
 
 for key, item in outputs.items():
-    if key in ['1', '2', '3', '4', '16']:
+    if key in ['1', '2', '3', '4', '10', '16']:
         x_vals = np.arange(item.size)*sampletimes[key]
         ax1.plot(x_vals, np.square(np.abs(item)), label=key)
         ax1.set_xlim(np.amin(x_vals), np.amax(x_vals))
@@ -83,12 +83,12 @@ ax1.set_xlabel("$t[s]$")
 fig2, ax2 = plt.subplots(1, figsize=figure_size)
 
 for key, item in outputs.items():
-    if key in ['1', '2', '3', '4', '16']:
+    if key in ['1', '2', '3', '4', '10', '16']:
         x_vals = np.arange(item.size)*sampletimes[key]
         ax2.plot(x_vals, np.square(np.abs(item)), label=key)
     
 ax2.legend()
-ax2.set_xlim(0.5e-9, 0.75e-9)
+ax2.set_xlim(1.125e-9, 1.375e-9)
 
 
 output_fname = "oversampling"

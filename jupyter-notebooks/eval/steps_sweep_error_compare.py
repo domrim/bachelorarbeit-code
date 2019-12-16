@@ -61,7 +61,7 @@ all_sims = {}
 for modulation, send_bits, name in [(modulation_bpsk, send_bits_bpsk, "bpsk"), (modulation_qpsk, send_bits_qpsk, "qpsk"), (modulation_qam, send_bits_qam, "16qam")]:
     sims ={}
     for power in power_list:
-        send_rc = generate_signal(modulation, t_sample_rc, 1/f_symbol, send_bits, rc, syms_per_filt, power)
+        send_rc = generate_signal(modulation, t_sample_rc, 1/f_symbol, send_bits, rc, syms_per_filt, n_symbol, power)
         send = add_zeros(send_rc, 100 * int(1/f_symbol/t_sample_rc))
 
         ## Simulation of reference transmission (dz = 0.1 km)
@@ -140,7 +140,7 @@ all_sims2 = {}
 for modulation, send_bits, name in [(modulation_bpsk, send_bits_bpsk, "bpsk"), (modulation_qpsk, send_bits_qpsk, "qpsk"), (modulation_qam, send_bits_qam, "16qam")]:
     sims ={}
     for power in power_list:
-        send_rc = generate_signal(modulation, t_sample_rc, 1/f_symbol, send_bits, rc, syms_per_filt, power)
+        send_rc = generate_signal(modulation, t_sample_rc, 1/f_symbol, send_bits, rc, syms_per_filt, n_symbol, power)
         send = add_zeros(send_rc, 100 * int(1/f_symbol/t_sample_rc))
 
         ## Simulation of reference transmission (dz = 0.1 km)
