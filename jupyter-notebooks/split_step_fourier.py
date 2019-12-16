@@ -39,8 +39,8 @@ def dbm2watt(power_dbm):
     return np.power(10, (power_dbm-30)/10)
 
 
-def calc_power(signal, T_sample, T_symbol):
-    return np.sum(signal * np.conj(signal)) * T_sample/T_symbol
+def calc_power(signal, n_up):
+    return np.sum(signal * np.conj(signal)) / n_up
 
 
 # Filter Definitions
@@ -162,23 +162,23 @@ def get_gaussian_ir(syms, energy_factor, f_symbol, n_up):
 
 
 # Pulse forming
-def amplifier(signal, power, T_sample, T_symbol):
+def amplifier(signal, power, n_up, n_symbol):
     """Amplifies signal
     
-    This function amplifies signal to given power
+    This function amplifies signal to given power per symbol
     
     :param signal: Array containing signal values
-    :param power: Target power for amplification in dBm
-    :param T_sample: time-length of one sample
-    :param T_symbol: time-length of one symbol
+    :param power: Target power per symbol for amplification in dBm
+    :param n_up: oversampling factor
+    :param n_symbol: amount of sent symbols
     
     :returns: signal amplified to target power
     
     """
-    P_is = calc_power(signal, T_sample, T_symbol)
-    P_should = dbm2watt(power)
+    P_is = calc_power(signal, n_up)
+    P_should = dbm2watt(power) * n_symbol
     output = signal * np.sqrt(P_should/P_is)
-    P_now = calc_power(output, T_sample, T_symbol)
+    P_now = calc_power(output, n_up)
     if DEBUG:
         print(f"Power before amplification: {np.real(P_is)} W ({watt2dbm(np.real(P_is))} dBm)")
         print(f"Power target value: {P_should} W ({watt2dbm(P_should)} dBm)")
@@ -187,7 +187,7 @@ def amplifier(signal, power, T_sample, T_symbol):
     return output
 
 
-def generate_signal(modulation, T_sample, T_symbol, data, pulse, syms, P_in=None):
+def generate_signal(modulation, T_sample, T_symbol, data, pulse, syms, n_symbol, P_in=None):
     """Generates send Signal
     
     This function calculates send signal with variable 
@@ -200,6 +200,7 @@ def generate_signal(modulation, T_sample, T_symbol, data, pulse, syms, P_in=None
     :param data: Data to send. Should be an array containing the symbols.
     :param pulse: Impulse response of pulse filter
     :param syms: "Normed" symbol length of pulse
+    :param n_symbol: amount of sent symbols
     :param P_in: power in dBm the signal should have, if not given, signal won't be amplified but still normed
     
     :returns: array conatining send signal
@@ -216,7 +217,7 @@ def generate_signal(modulation, T_sample, T_symbol, data, pulse, syms, P_in=None
         send_symbols_up = np.zeros(len(data) * pulse.size, dtype=complex)
         send_symbols_up[ : : pulse.size] = send_symbols
     else:
-        n_up = int((pulse.size - 1) / (2 * syms))
+        n_up = T_symbol / T_sample
         send_symbols_up = np.zeros(len(data) * n_up, dtype=complex)
         send_symbols_up[ : : n_up] = send_symbols
     
@@ -227,7 +228,8 @@ def generate_signal(modulation, T_sample, T_symbol, data, pulse, syms, P_in=None
 
     # Amplification of signal to given power
     if P_in is not None:
-        send_signal = amplifier(send_signal, P_in, T_sample, T_symbol)
+        n_up = T_symbol / T_sample
+        send_signal = amplifier(send_signal, P_in, n_up, n_symbol)
 
     return send_signal
 
