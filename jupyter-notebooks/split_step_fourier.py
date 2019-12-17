@@ -217,9 +217,7 @@ def generate_signal(modulation, T_sample, T_symbol, data, pulse, syms, n_symbol,
         send_symbols_up = np.zeros(len(data) * pulse.size, dtype=complex)
         send_symbols_up[ : : pulse.size] = send_symbols
     else:
-        n_up_float = T_symbol / T_sample
-        assert n_up_float.is_integer(), "Something has gone wrong. n_up should be an integer, but is {n_up}"
-        n_up = int(n_up_float)
+        n_up = int(T_symbol / T_sample)
         send_symbols_up = np.zeros(len(data) * n_up, dtype=complex)
         send_symbols_up[ : : n_up] = send_symbols
     

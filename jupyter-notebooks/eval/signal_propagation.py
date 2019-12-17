@@ -172,40 +172,55 @@ output3 = splitstepfourier(send_new2, t_sample_rc2, dz2, nz2, alpha2, beta22, ga
 
 
 ## Animated Plot
-plt.rcParams.update({'font.size': 22})
+plt.rcParams.update({'font.size': 26})
+plt.rcParams['axes.labelweight'] = 'bold'
 
-all_vals2 = np.square(np.abs(np.asarray([val for val in output3.values()]).flatten()))
+all_vals2 = np.square(np.abs(np.asarray([val for val in output3.values()]).flatten()))*1e3
 ymin2 = np.amin(all_vals2)
 ymax2 = np.amax(all_vals2)*1.1
 
-x_vals2 = np.arange(send_new2.size)*t_sample_rc
+x_vals2 = np.arange(send_new2.size)*t_sample_rc*1e9
 xmin2 = np.amin(x_vals2)
 xmax2 = np.amax(x_vals2)
 
 fig = plt.figure(figsize=(16,9))
 camera = Camera(fig)
 
-p = plt.plot(x_vals2, np.square(np.abs(send_new2)), label='Schritt 0 (0 km)', color='tab:blue')
+signal = np.square(np.abs(send_new2))*1e3
+start_signal = signal
+p = plt.plot(x_vals2, signal, label='Schritt 0 (0 km)', color='tab:blue')
 plt.xlim(xmin2,xmax2)
 plt.ylim(ymin2,ymax2)
 plt.title("Signalverlauf auf LWL")
-plt.ylabel("$|s|^2$ [W]")
-plt.xlabel("$t$ [s]")
+plt.ylabel("$|u|^2/$mJ")
+plt.xlabel("$t/$ns")
 plt.legend(p, ['Schritt 0.0'])
-plt.savefig('../../../bachelorarbeit-folien/abschlussvortrag/graphics/fiber_propagation_wallpaper_noalpha.pdf')
+plt.savefig('../../../bachelorarbeit-folien/abschlussvortrag/images/fiber_propagation_wallpaper_noalpha.pdf')
 camera.snap()
 
 for key,val in output3.items():
-    p = plt.plot(x_vals2, np.square(np.abs(val)), color='tab:blue')
+    signal = np.square(np.abs(val))*1e3
+    p = plt.plot(x_vals2, signal, color='tab:blue')
     plt.xlim(xmin2,xmax2)
     plt.ylim(ymin2,ymax2)
     plt.title("Signalverlauf auf LWL")
-    plt.ylabel("$|s|^2$ [W]")
-    plt.xlabel("$t$ [s]")
+    plt.ylabel("$|u|^2/$mJ")
+    plt.xlabel("$t/$ns")
     plt.legend(p, [f'Schritt {key}'])
     camera.snap()
 
 animation = camera.animate(interval=200)
+
+fig_temp = plt.figure(figsize=(16,9))
+plt.plot(x_vals2, np.square(np.abs(output3['100']))*1e3, label='Schritt 100.0')
+plt.plot(x_vals2, start_signal, label='Schritt 0.0')
+plt.xlim(xmin2,xmax2)
+plt.ylim(ymin2,ymax2)
+plt.title("Signalverlauf auf LWL")
+plt.ylabel("$|u|^2/$mJ")
+plt.xlabel("$t/$ns")
+plt.legend()
+plt.savefig('../../../bachelorarbeit-folien/abschlussvortrag/images/fiber_propagation_wallpaper_final_noalpha.pdf')
 
 
 output_fname = "fiber_propagation"
@@ -217,5 +232,5 @@ tikzplotlib.save(f'{output_path}{output_fname}_noalpha.tex', figure=fig2, wrap=F
 fig1.savefig(f"{output_path}{output_fname}.pdf", bbox_inches='tight')
 fig2.savefig(f"{output_path}{output_fname}_noalpha.pdf", bbox_inches='tight')
 
-animation.save(f'../../../bachelorarbeit-folien/abschlussvortrag/graphics/{output_fname}_animated_noalpha.mp4', dpi=96)
+animation.save(f'../../../bachelorarbeit-folien/abschlussvortrag/video/{output_fname}_animated_noalpha.mp4', dpi=96)
 
