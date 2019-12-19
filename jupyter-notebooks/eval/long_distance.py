@@ -34,7 +34,7 @@ P_in = 19 # dBm
 # modulation scheme and constellation points
 M = 2
 modulation = {'0': -1, '1': 1}
-n_symbol = 30 # number of symbols
+n_symbol = 4 # number of symbols
 
 
 # Signalfolge generieren
@@ -45,7 +45,7 @@ send_bits = np.random.choice([symbol for symbol in modulation.keys()], size=n_sy
 send_ir = generate_signal(modulation, t_sample, 1/f_symbol, send_bits, ir, syms_per_filt, n_symbol)
 
 # add zeros before and after signal (use samples per symbol as factor)
-send = add_zeros(send_ir, 70 * int(1/f_symbol/t_sample))
+send = add_zeros(send_ir, 600 * int(1/f_symbol/t_sample))
 
 
 ## Transmission parameters
@@ -62,7 +62,7 @@ gamma = 1.3 # [1/W/km]
 
 
 # init arrays for plotting with values at 0 input
-power_full_distance = [np.power(10, (P_in-30)/10)]
+power_full_distance = [dbm2watt(P_in)]
 xvals_full_distance = [0.0]
 
 # put an amplifier every z_length km in the fiber
@@ -79,7 +79,7 @@ if DEBUG:
 for segment in range(int(full_distance / z_length)):
     segment_output = splitstepfourier(next_input, t_sample, dz, nz, alpha, beta2, gamma, True)
     signals[f'{segment*z_length}'] = splitstepfourier(next_input, t_sample, dz, nz, alpha, beta2, gamma)
-    segment_power = [np.real(calc_power(val, n_up) for val in segment_output.values()]
+    segment_power = [np.real(calc_power(val, n_up, n_symbol)) for val in segment_output.values()]
     segment_xvals = [float(key)*dz + segment * z_length for key in segment_output.keys()]
     
     if DEBUG:
@@ -96,18 +96,18 @@ for segment in range(int(full_distance / z_length)):
     xvals_full_distance += segment_xvals
     
     if segment is not int(full_distance/z_length)-1:
-        power_full_distance += [np.real(calc_power(next_input, n_up))]
+        power_full_distance += [np.real(calc_power(next_input, n_up, n_symbol))]
         xvals_full_distance += [(segment+1.0)*z_length]
 
 if full_distance % z_length != 0:
-    power_full_distance += [np.real(calc_power(next_input, n_up))]
+    power_full_distance += [np.real(calc_power(next_input, n_up, n_symbol))]
     xvals_full_distance += [(segment+1.0)*z_length]
     
     rest_z_length = full_distance % z_length
     rest_dz = rest_z_length / nz
     rest_output = splitstepfourier(next_input, t_sample, rest_dz, nz, alpha, beta2, gamma, True)
     signals[f'{full_distance}'] = splitstepfourier(next_input, t_sample, rest_dz, nz, alpha, beta2, gamma)
-    rest_power = [np.real(calc_power(val, n_up)) for val in rest_output.values()]
+    rest_power = [np.real(calc_power(val, n_up, n_symbol)) for val in rest_output.values()]
     rest_xvals = [float(key)*rest_dz + int(full_distance / z_length) * z_length for key in rest_output.keys()]
     
     if DEBUG:

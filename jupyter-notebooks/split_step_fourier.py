@@ -39,8 +39,8 @@ def dbm2watt(power_dbm):
     return np.power(10, (power_dbm-30)/10)
 
 
-def calc_power(signal, n_up):
-    return np.sum(signal * np.conj(signal)) / n_up
+def calc_power(signal, n_up, n_symbol):
+    return np.sum(signal * np.conj(signal)) / n_up / n_symbol
 
 
 # Filter Definitions
@@ -175,10 +175,10 @@ def amplifier(signal, power, n_up, n_symbol):
     :returns: signal amplified to target power
     
     """
-    P_is = calc_power(signal, n_up)
-    P_should = dbm2watt(power) * n_symbol
+    P_is = calc_power(signal, n_up, n_symbol)
+    P_should = dbm2watt(power)
     output = signal * np.sqrt(P_should/P_is)
-    P_now = calc_power(output, n_up)
+    P_now = calc_power(output, n_up, n_symbol)
     if DEBUG:
         print(f"Power before amplification: {np.real(P_is)} W ({watt2dbm(np.real(P_is))} dBm)")
         print(f"Power target value: {P_should} W ({watt2dbm(P_should)} dBm)")
